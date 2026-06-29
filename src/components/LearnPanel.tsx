@@ -357,7 +357,7 @@ export function LearnPanel() {
         <p className="text-sm leading-relaxed">{preset.body}</p>
       </div>
 
-      {/* live status — fixed grid, always visible */}
+      {/* live status - fixed grid, always visible */}
       <div className="border-2 border-black">
         <div className="grid grid-cols-3 md:grid-cols-4 divide-x-2 divide-y-2 divide-black">
           <StatCell label="QUEUED" value={stats.queued} />
@@ -399,7 +399,7 @@ export function LearnPanel() {
         </div>
       </div>
 
-      {/* flood / failure impact panel — props frozen at first appearance */}
+      {/* flood / failure impact panel - props frozen at first appearance */}
       {isFlooding && impactRef.current && (
         <FloodImpact
           hasDrops={impactRef.current.hasDrops}
@@ -720,223 +720,754 @@ function QueueDiagram() {
   );
 }
 
+function RolesDiagram() {
+  return (
+    <svg viewBox="0 0 600 160" className="w-full h-auto border-2 border-black bg-white">
+      <rect x="20" y="50" width="140" height="60" fill="black" />
+      <text x="90" y="85" textAnchor="middle" fill="white" style={{ fontSize: 11, fontWeight: 900, textTransform: "uppercase" }}>
+        Producer
+      </text>
+      <text x="90" y="132" textAnchor="middle" fill="black" style={{ fontSize: 10, fontWeight: 700 }}>
+        creates work
+      </text>
+
+      <line x1="160" y1="80" x2="225" y2="80" stroke="black" strokeWidth="3" />
+      <polygon points="225,80 215,73 215,87" fill="black" />
+
+      <rect x="230" y="40" width="140" height="80" fill="white" stroke="black" strokeWidth="3" />
+      <text x="300" y="65" textAnchor="middle" fill="black" style={{ fontSize: 11, fontWeight: 900, textTransform: "uppercase" }}>
+        Queue
+      </text>
+      <rect x="245" y="75" width="18" height="28" fill="#ff3000" />
+      <rect x="267" y="75" width="18" height="28" fill="#ff3000" />
+      <rect x="289" y="75" width="18" height="28" fill="#ff3000" />
+      <rect x="311" y="75" width="18" height="28" fill="#ff3000" />
+      <text x="300" y="135" textAnchor="middle" fill="black" style={{ fontSize: 10, fontWeight: 700 }}>
+        holds &amp; orders messages
+      </text>
+
+      <line x1="370" y1="80" x2="435" y2="80" stroke="black" strokeWidth="3" />
+      <polygon points="435,80 425,73 425,87" fill="black" />
+
+      <rect x="440" y="50" width="140" height="60" fill="black" />
+      <text x="510" y="85" textAnchor="middle" fill="white" style={{ fontSize: 11, fontWeight: 900, textTransform: "uppercase" }}>
+        Consumer
+      </text>
+      <text x="510" y="132" textAnchor="middle" fill="black" style={{ fontSize: 10, fontWeight: 700 }}>
+        does the work
+      </text>
+    </svg>
+  );
+}
+
+function DirectVsQueueDiagram() {
+  return (
+    <svg viewBox="0 0 680 200" className="w-full h-auto border-2 border-black bg-white">
+      {/* Direct side */}
+      <text x="150" y="25" textAnchor="middle" fill="#ff3000" style={{ fontSize: 11, fontWeight: 900, textTransform: "uppercase" }}>
+        WITHOUT QUEUE
+      </text>
+      <rect x="50" y="50" width="100" height="40" fill="black" />
+      <text x="100" y="75" textAnchor="middle" fill="white" style={{ fontSize: 9, fontWeight: 900 }}>
+        API / HTTP
+      </text>
+      <line x1="150" y1="70" x2="200" y2="70" stroke="black" strokeWidth="2" />
+      <polygon points="200,70 192,65 192,75" fill="black" />
+      <rect x="200" y="50" width="100" height="40" fill="#ff3000" />
+      <text x="250" y="75" textAnchor="middle" fill="white" style={{ fontSize: 9, fontWeight: 900 }}>
+        Slow Service
+      </text>
+      <path d="M 100 95 L 100 120" stroke="black" strokeWidth="2" strokeDasharray="4,3" />
+      <text x="150" y="130" textAnchor="middle" fill="black" style={{ fontSize: 9 }}>
+        caller blocks &amp; times out
+      </text>
+      <line x1="50" y1="135" x2="300" y2="135" stroke="black" strokeWidth="1" strokeDasharray="3,3" />
+
+      {/* Queued side */}
+      <text x="450" y="25" textAnchor="middle" fill="black" style={{ fontSize: 11, fontWeight: 900, textTransform: "uppercase" }}>
+        WITH QUEUE
+      </text>
+      <rect x="330" y="50" width="90" height="40" fill="black" />
+      <text x="375" y="75" textAnchor="middle" fill="white" style={{ fontSize: 9, fontWeight: 900 }}>
+        Web Server
+      </text>
+      <line x1="420" y1="70" x2="450" y2="70" stroke="black" strokeWidth="2" />
+      <polygon points="450,70 442,65 442,75" fill="black" />
+      <rect x="450" y="50" width="90" height="40" fill="white" stroke="black" strokeWidth="2" />
+      <text x="495" y="75" textAnchor="middle" fill="black" style={{ fontSize: 9, fontWeight: 900 }}>
+        Queue
+      </text>
+      <line x1="540" y1="70" x2="570" y2="70" stroke="black" strokeWidth="2" />
+      <polygon points="570,70 562,65 562,75" fill="black" />
+      <rect x="570" y="50" width="90" height="40" fill="black" />
+      <text x="615" y="75" textAnchor="middle" fill="white" style={{ fontSize: 9, fontWeight: 900 }}>
+        Worker
+      </text>
+      <text x="495" y="120" textAnchor="middle" fill="black" style={{ fontSize: 9 }}>
+        returns immediately
+      </text>
+      <text x="495" y="135" textAnchor="middle" fill="black" style={{ fontSize: 9 }}>
+        worker processes when ready
+      </text>
+    </svg>
+  );
+}
+
+function FifoDiagram() {
+  return (
+    <svg viewBox="0 0 600 130" className="w-full h-auto border-2 border-black bg-white">
+      <text x="80" y="30" textAnchor="middle" fill="black" style={{ fontSize: 9, fontWeight: 700 }}>
+        Messages entering
+      </text>
+      <line x1="40" y1="45" x2="160" y2="45" stroke="black" strokeWidth="2" strokeDasharray="3,3" />
+      <rect x="50" y="50" width="30" height="30" fill="#ff3000" rx="2" />
+      <text x="65" y="69" textAnchor="middle" fill="white" style={{ fontSize: 12, fontWeight: 900 }}>1</text>
+      <rect x="85" y="50" width="30" height="30" fill="#ff3000" rx="2" />
+      <text x="100" y="69" textAnchor="middle" fill="white" style={{ fontSize: 12, fontWeight: 900 }}>2</text>
+      <rect x="120" y="50" width="30" height="30" fill="#ff3000" rx="2" />
+      <text x="135" y="69" textAnchor="middle" fill="white" style={{ fontSize: 12, fontWeight: 900 }}>3</text>
+
+      <line x1="155" y1="65" x2="195" y2="65" stroke="black" strokeWidth="3" />
+      <polygon points="195,65 185,58 185,72" fill="black" />
+
+      <rect x="200" y="35" width="140" height="60" fill="white" stroke="black" strokeWidth="3" />
+      <text x="270" y="58" textAnchor="middle" fill="black" style={{ fontSize: 11, fontWeight: 900, textTransform: "uppercase" }}>
+        Queue
+      </text>
+
+      <line x1="340" y1="65" x2="380" y2="65" stroke="black" strokeWidth="3" />
+      <polygon points="380,65 370,58 370,72" fill="black" />
+
+      <rect x="385" y="50" width="30" height="30" fill="#ff3000" rx="2" stroke="black" strokeWidth="2" />
+      <text x="400" y="69" textAnchor="middle" fill="white" style={{ fontSize: 12, fontWeight: 900 }}>1</text>
+
+      <text x="400" y="115" textAnchor="middle" fill="black" style={{ fontSize: 9, fontWeight: 700 }}>
+        1 arrives first, leaves first
+      </text>
+    </svg>
+  );
+}
+
+function BackpressureDiagram() {
+  return (
+    <svg viewBox="0 0 600 150" className="w-full h-auto border-2 border-black bg-white">
+      <rect x="20" y="40" width="120" height="50" fill="#ff3000" />
+      <text x="80" y="62" textAnchor="middle" fill="white" style={{ fontSize: 10, fontWeight: 900, textTransform: "uppercase" }}>
+        Producer
+      </text>
+      <text x="80" y="78" textAnchor="middle" fill="white" style={{ fontSize: 9, fontWeight: 700 }}>
+        BLOCKED
+      </text>
+
+      <line x1="140" y1="65" x2="195" y2="65" stroke="black" strokeWidth="3" strokeDasharray="5,4" />
+      <text x="168" y="56" textAnchor="middle" fill="#ff3000" style={{ fontSize: 14, fontWeight: 900 }}>✗</text>
+
+      <rect x="200" y="25" width="140" height="80" fill="white" stroke="#ff3000" strokeWidth="4" />
+      <text x="270" y="48" textAnchor="middle" fill="#ff3000" style={{ fontSize: 10, fontWeight: 900, textTransform: "uppercase" }}>
+        Queue
+      </text>
+      <text x="270" y="62" textAnchor="middle" fill="#ff3000" style={{ fontSize: 9, fontWeight: 700 }}>
+        FULL
+      </text>
+      <rect x="215" y="68" width="18" height="24" fill="#ff3000" />
+      <rect x="237" y="68" width="18" height="24" fill="#ff3000" />
+      <rect x="259" y="68" width="18" height="24" fill="#ff3000" />
+      <rect x="281" y="68" width="18" height="24" fill="#ff3000" />
+      <rect x="303" y="68" width="18" height="24" fill="#ff3000" />
+
+      <line x1="340" y1="65" x2="420" y2="65" stroke="black" strokeWidth="2" />
+      <polygon points="420,65 412,58 412,72" fill="black" />
+
+      <rect x="425" y="40" width="120" height="50" fill="black" />
+      <text x="485" y="62" textAnchor="middle" fill="white" style={{ fontSize: 10, fontWeight: 900, textTransform: "uppercase" }}>
+        Consumer
+      </text>
+      <text x="485" y="78" textAnchor="middle" fill="white" style={{ fontSize: 9, fontWeight: 700 }}>
+        overwhelmed
+      </text>
+    </svg>
+  );
+}
+
+function PoisonDiagram() {
+  return (
+    <svg viewBox="0 0 600 190" className="w-full h-auto border-2 border-black bg-white">
+      {/* Retry loop arrow */}
+      <path d="M 530 95 Q 560 95 560 60 Q 560 25 200 25 Q 80 25 80 60 Q 80 80 140 80" stroke="#ff3000" strokeWidth="2" fill="none" strokeDasharray="5,3" />
+      <polygon points="140,80 130,74 130,86" fill="#ff3000" />
+      <text x="420" y="18" textAnchor="middle" fill="#ff3000" style={{ fontSize: 9, fontWeight: 700 }}>
+        retry (max 3)
+      </text>
+
+      <rect x="20" y="90" width="120" height="50" fill="black" />
+      <text x="80" y="112" textAnchor="middle" fill="white" style={{ fontSize: 10, fontWeight: 900, textTransform: "uppercase" }}>
+        Producer
+      </text>
+
+      <line x1="140" y1="115" x2="200" y2="115" stroke="black" strokeWidth="2" />
+      <polygon points="200,115 192,108 192,122" fill="black" />
+
+      <rect x="205" y="80" width="130" height="70" fill="white" stroke="black" strokeWidth="2" />
+      <text x="270" y="105" textAnchor="middle" fill="black" style={{ fontSize: 10, fontWeight: 900, textTransform: "uppercase" }}>
+        Queue
+      </text>
+      <rect x="218" y="115" width="16" height="24" fill="#ff3000" />
+      <rect x="238" y="115" width="16" height="24" fill="#ff3000" />
+      <rect x="258" y="115" width="16" height="24" fill="#ff3000" />
+
+      <line x1="335" y1="115" x2="395" y2="115" stroke="black" strokeWidth="2" />
+      <polygon points="395,115 387,108 387,122" fill="black" />
+
+      <rect x="400" y="90" width="120" height="50" fill="black" />
+      <text x="460" y="112" textAnchor="middle" fill="white" style={{ fontSize: 10, fontWeight: 900, textTransform: "uppercase" }}>
+        Consumer
+      </text>
+
+      {/* DLQ */}
+      <line x1="460" y1="145" x2="460" y2="170" stroke="black" strokeWidth="2" />
+      <rect x="400" y="155" width="120" height="30" fill="white" stroke="#ff3000" strokeWidth="2" />
+      <text x="460" y="174" textAnchor="middle" fill="#ff3000" style={{ fontSize: 9, fontWeight: 900, textTransform: "uppercase" }}>
+        DLQ
+      </text>
+    </svg>
+  );
+}
+
 interface FaqItem {
   title: string;
   summary: string;
   body: React.ReactNode;
+  illustration?: React.ReactNode;
 }
 
 const FAQ_ITEMS: FaqItem[] = [
   {
     title: "What is a message queue, in plain English?",
     summary:
-      "A waiting line for digital work that lets producers and consumers act independently.",
+      "A waiting line for digital work that decouples producers from consumers.",
     body: (
       <>
         <p className="text-sm leading-relaxed">
-          Imagine a busy restaurant: waiters keep taking orders and sliding them
-          onto a rail. Cooks pick orders off the rail one by one. The rail means
-          waiters never wait for a cook, and cooks never wait for an order.
+          Imagine a busy online food delivery service. A waiter takes an order
+          and slides it onto a rail. The cook picks the order off the rail,
+          cooks it, and slides it back. The waiter never has to wait for the
+          cook, and the cook never has to wait for the waiter. The rail is the
+          queue.
         </p>
         <p className="text-sm leading-relaxed">
-          In software, a <Keyword term="producer">producer</Keyword> sends a{" "}
-          <Keyword term="queue">message</Keyword> into the queue and immediately
-          moves on. A <Keyword term="consumer">consumer</Keyword> picks the
-          message up later, processes it, and removes it. The queue sits between
-          them as a buffer.
+          In software, a <Keyword term="producer">producer</Keyword> sends a
+          message into the queue and immediately moves on to do other things. A{" "}
+          <Keyword term="consumer">consumer</Keyword> picks up the message later
+          when it's ready to process it. The queue sits between them as a
+          buffer.
         </p>
-        <QueueDiagram />
-        <p className="text-xs opacity-50">
-          The producer drops messages into the queue. The consumer pulls them
-          out when ready. Neither side waits for the other.
-        </p>
+        <div className="border-l-4 border-swiss-accent pl-3 text-sm leading-relaxed">
+          <span className="font-black text-xs uppercase tracking-widest text-swiss-accent">
+            Example
+          </span>
+          <p className="mt-1">
+            A web server needs to send a welcome email after signup. Instead of
+            sending the email directly (which takes 2-3 seconds), it pushes an
+            "email task" message into the queue and responds to the user in
+            milliseconds. A background worker reads the queue, sends the email,
+            and removes the task. The web server never touches the email server.
+          </p>
+        </div>
       </>
     ),
+    illustration: <QueueDiagram />,
   },
   {
     title: "Who are the main players?",
     summary:
       "Producer, queue/broker, and consumer each have a single, clear job.",
     body: (
-      <ul className="text-sm leading-relaxed flex flex-col gap-1.5">
-        <li className="flex gap-2">
-          <span className="font-black text-swiss-accent shrink-0">1.</span>
-          <span>
-            <strong>Producer</strong>: the service that creates work. It could
-            be a web server logging an event, a payment service emitting an
-            invoice, or a sensor sending a reading.
-          </span>
-        </li>
-        <li className="flex gap-2">
-          <span className="font-black text-swiss-accent shrink-0">2.</span>
-          <span>
-            <strong>Queue / Broker</strong>: the middleman that holds messages.
-            It keeps them in memory or on disk, tracks order, and hands them out
-            to consumers.
-          </span>
-        </li>
-        <li className="flex gap-2">
-          <span className="font-black text-swiss-accent shrink-0">3.</span>
-          <span>
-            <strong>Consumer</strong>: the service that does the work. It pulls
-            a message, processes it, and tells the queue whether it succeeded
-            (ack) or failed (nack).
-          </span>
-        </li>
-      </ul>
+      <>
+        <p className="text-sm leading-relaxed">
+          Every message queue has exactly three roles, and each role has one
+          responsibility:
+        </p>
+        <ul className="text-sm leading-relaxed flex flex-col gap-1.5">
+          <li className="flex gap-2">
+            <span className="font-black text-swiss-accent shrink-0">1.</span>
+            <span>
+              <strong>Producer</strong> creates messages and sends them to the
+              queue. It never waits for a response. Example: a payment API
+              emitting an "invoice generated" event after a successful
+              charge.
+            </span>
+          </li>
+          <li className="flex gap-2">
+            <span className="font-black text-swiss-accent shrink-0">2.</span>
+            <span>
+              <strong>Queue / Broker</strong> stores messages in order and
+              hands them out to consumers. It handles durability, ordering, and
+              delivery guarantees. Popular brokers include RabbitMQ, Kafka, and
+              Redis.
+            </span>
+          </li>
+          <li className="flex gap-2">
+            <span className="font-black text-swiss-accent shrink-0">3.</span>
+            <span>
+              <strong>Consumer</strong> pulls a message, processes it, and
+              tells the queue whether it succeeded (
+              <Keyword term="ack">ack</Keyword>) or failed (
+              <Keyword term="nack">nack</Keyword>). Example: an email worker
+              that reads "send welcome email" tasks and calls an SMTP server.
+            </span>
+          </li>
+        </ul>
+        <p className="text-sm leading-relaxed">
+          Producers and consumers can be written in different languages,
+          deployed on different machines, and scaled independently. The queue
+          is the only shared dependency.
+        </p>
+      </>
     ),
+    illustration: <RolesDiagram />,
   },
   {
-    title: "Why not just call the consumer directly?",
+    title: "What happens without a queue?",
     summary:
-      "Direct calls couple the two sides; a queue adds decoupling, async work, and resilience.",
+      "Direct calls couple components tightly. A queue decouples them entirely.",
     body: (
       <>
         <p className="text-sm leading-relaxed">
-          Direct calls couple the producer to the consumer. If the consumer is
-          slow or offline, the producer stalls or fails. A queue fixes this with
-          four big wins:
+          Without a queue, service A calls service B directly over HTTP or RPC.
+          Service A must wait for B's response. If B is slow or down, A is
+          slow or broken. This is <strong>synchronous coupling</strong>.
+        </p>
+        <div className="border-l-4 border-swiss-accent pl-3 text-sm leading-relaxed">
+          <span className="font-black text-xs uppercase tracking-widest text-swiss-accent">
+            Real-world example
+          </span>
+          <p className="mt-1">
+            An e-commerce site calls the payment gateway, inventory service,
+            and email service in sequence. Each call adds latency. If the email
+             service is down, the whole checkout fails, even though the
+            customer doesn't need their email to complete the purchase.
+          </p>
+        </div>
+        <p className="text-sm leading-relaxed">
+          A queue fixes this with four big wins:
         </p>
         <ul className="text-sm leading-relaxed flex flex-col gap-1.5">
           <li className="flex gap-2">
             <span className="font-black shrink-0">+</span>
             <span>
-              <strong>Decoupling</strong>: producers and consumers do not need
-              to know about each other. They only agree on the queue and the
-              message format.
+              <strong>Decoupling</strong>: producers and consumers know
+              nothing about each other. They only agree on the message format.
             </span>
           </li>
           <li className="flex gap-2">
             <span className="font-black shrink-0">+</span>
             <span>
               <strong>Async work</strong>: the producer sends a message and
-              keeps going. The consumer processes it whenever it is free.
+              moves on. The consumer processes when free.
             </span>
           </li>
           <li className="flex gap-2">
             <span className="font-black shrink-0">+</span>
             <span>
-              <strong>Load leveling</strong>: a burst of messages gets absorbed
-              by the queue instead of overwhelming the consumer. The consumer
-              drains the queue at its own pace.
+              <strong>Load leveling</strong>: a burst of 1000 signups doesn't
+              crash the email server. The queue absorbs the spike and the
+              consumer drains at its own pace.
             </span>
           </li>
           <li className="flex gap-2">
             <span className="font-black shrink-0">+</span>
             <span>
               <strong>Resilience</strong>: if a consumer crashes, its messages
-              stay in the queue and are picked up by another consumer when it
-              restarts.
+              stay in the queue. When it restarts (or another consumer picks
+              them up), work resumes without data loss.
             </span>
           </li>
         </ul>
       </>
     ),
+    illustration: <DirectVsQueueDiagram />,
   },
   {
     title: "What does FIFO mean?",
     summary:
-      "First In, First Out: the oldest message is the next one delivered.",
+      "First In, First Out: messages are delivered in the order they arrived.",
     body: (
-      <p className="text-sm leading-relaxed">
-        <Keyword term="FIFO">FIFO</Keyword> stands for "First In, First Out."
-        The first message placed in the queue is the first one delivered to a
-        consumer. This keeps order predictable. Not every queue is strictly FIFO
-        in production, but it is the default mental model and the one this
-        simulator uses.
-      </p>
+      <>
+        <p className="text-sm leading-relaxed">
+          <Keyword term="FIFO">FIFO</Keyword> stands for "First In, First Out."
+          The first message that enters the queue is the first one delivered to
+          a consumer. Think of a ticket counter: the person who joins the line
+          first is served first.
+        </p>
+        <div className="border-l-4 border-swiss-accent pl-3 text-sm leading-relaxed">
+          <span className="font-black text-xs uppercase tracking-widest text-swiss-accent">
+            Example
+          </span>
+          <p className="mt-1">
+            A print queue processes jobs in FIFO order. If you submit your
+            document before someone else, it prints first. This is predictable
+            and fair. In some high-throughput systems, strict FIFO is relaxed
+            to improve performance, but this simulator uses strict FIFO for
+            clarity.
+          </p>
+        </div>
+      </>
     ),
+    illustration: <FifoDiagram />,
   },
   {
     title: "What patterns does this simulator show?",
     summary:
       "Simple queue, work queue, pub/sub, and topic routing cover the most common use cases.",
     body: (
-      <ul className="text-sm leading-relaxed flex flex-col gap-1.5">
-        <li className="flex gap-2">
-          <span className="font-black text-swiss-accent shrink-0">01</span>
-          <span>
-            <strong>Simple queue</strong>: one producer, one queue, one
-            consumer. The baseline.
-          </span>
-        </li>
-        <li className="flex gap-2">
-          <span className="font-black text-swiss-accent shrink-0">02</span>
-          <span>
-            <strong>Work queue</strong>: multiple consumers share one queue.
-            Each message goes to exactly one consumer, spreading the load.
-          </span>
-        </li>
-        <li className="flex gap-2">
-          <span className="font-black text-swiss-accent shrink-0">03</span>
-          <span>
-            <strong>Pub/Sub</strong>: an exchange copies one message to every
-            bound queue. Every consumer receives every message.
-          </span>
-        </li>
-        <li className="flex gap-2">
-          <span className="font-black text-swiss-accent shrink-0">04</span>
-          <span>
-            <strong>Topic routing</strong>: an exchange uses routing keys and
-            binding patterns to deliver messages only to matching queues.
-          </span>
-        </li>
-      </ul>
+      <>
+        <p className="text-sm leading-relaxed">
+          Each simulator preset demonstrates a real-world messaging pattern:
+        </p>
+        <ul className="text-sm leading-relaxed flex flex-col gap-1.5">
+          <li className="flex gap-2">
+            <span className="font-black text-swiss-accent shrink-0">01</span>
+            <span>
+              <strong>Simple queue</strong>: one producer, one queue, one
+              consumer. Use case: a log ingester that writes events to a file.
+              Simple, reliable, the baseline.
+            </span>
+          </li>
+          <li className="flex gap-2">
+            <span className="font-black text-swiss-accent shrink-0">02</span>
+            <span>
+              <strong>Work queue / Competing consumers</strong>: multiple
+              consumers drain one queue. Each message is processed once. Use
+              case: image thumbnail generation: upload an image, one of ten
+              workers resizes it.
+            </span>
+          </li>
+          <li className="flex gap-2">
+            <span className="font-black text-swiss-accent shrink-0">03</span>
+            <span>
+              <strong>Pub/Sub (fanout)</strong>: every message goes to{" "}
+              <em>every</em> consumer. Use case: a price update broadcast to
+              all services (catalog, search, recommendations).
+            </span>
+          </li>
+          <li className="flex gap-2">
+            <span className="font-black text-swiss-accent shrink-0">04</span>
+            <span>
+              <strong>Topic routing</strong>: messages are routed by key
+              matching. Use case: log routing: <code>error</code> logs go to
+              the alerting service, <code>info</code> logs go to the analytics
+              service.
+            </span>
+          </li>
+        </ul>
+      </>
     ),
+
   },
   {
     title: "What is backpressure?",
     summary:
       "A full queue blocks the producer, protecting consumers from being overwhelmed.",
     body: (
-      <p className="text-sm leading-relaxed">
-        <Keyword term="backpressure">Backpressure</Keyword> happens when the
-        queue is full and cannot accept more messages. The producer is blocked
-        until consumers free up space. It looks like a failure, but it is
-        actually a safety mechanism: it prevents a fast producer from crashing a
-        slow consumer with too much memory.
-      </p>
+      <>
+        <p className="text-sm leading-relaxed">
+          <Keyword term="backpressure">Backpressure</Keyword> occurs when the
+          queue is completely full and the producer is blocked from sending
+          more messages. This is not a bug; it's a safety valve. Without it, a
+          fast producer could fill memory until the broker crashes.
+        </p>
+        <div className="border-l-4 border-swiss-accent pl-3 text-sm leading-relaxed">
+          <span className="font-black text-xs uppercase tracking-widest text-swiss-accent">
+            Example
+          </span>
+          <p className="mt-1">
+            A flash sale generates 10,000 orders per second. The inventory
+            service processes 500 orders per second. The queue fills up in
+            seconds. Producers block, customers see a "please wait" message,
+            but the system survives. Without backpressure, the broker would run
+            out of memory and crash completely.
+          </p>
+        </div>
+        <p className="text-sm leading-relaxed">
+          Remedies include: scaling consumers, increasing queue capacity (buys
+          time but does not fix a sustained mismatch), or throttling producers.
+        </p>
+      </>
     ),
+    illustration: <BackpressureDiagram />,
   },
   {
     title: "What is a poison message?",
     summary:
       "A message that always fails gets retried, then sidelined to a Dead Letter Queue.",
     body: (
-      <p className="text-sm leading-relaxed">
-        A <Keyword term="poison message">poison message</Keyword> fails every
-        time a consumer tries to process it. Without a safety net it would be
-        redelivered forever, wasting work and blocking good messages. Queues
-        solve this with a max retry count. After enough failures the message is
-        moved to a <Keyword term="DLQ">Dead Letter Queue</Keyword> for manual
-        inspection.
-      </p>
+      <>
+        <p className="text-sm leading-relaxed">
+          A <Keyword term="poison message">poison message</Keyword> is one that
+          fails every time a consumer tries to process it. Without safeguards,
+          it would be requested forever, wasting resources and blocking healthy
+          messages.
+        </p>
+        <div className="border-l-4 border-swiss-accent pl-3 text-sm leading-relaxed">
+          <span className="font-black text-xs uppercase tracking-widest text-swiss-accent">
+            Example
+          </span>
+          <p className="mt-1">
+            An order message contains malformed JSON: a required field is
+            missing. Every consumer that picks it up crashes. The queue
+            requeues it. It gets delivered again. And again. After 3 retries
+            (the max configured), the broker moves it to the{" "}
+            <Keyword term="DLQ">Dead Letter Queue</Keyword> (DLQ). It sits
+            there until an operator examines it, fixes the data, and
+            reprocesses it. The main queue is no longer clogged.
+          </p>
+        </div>
+        <p className="text-sm leading-relaxed">
+          The DLQ is critical for production systems. It isolates bad messages
+          so they don't bring down processing, and provides a place for manual
+          or automated recovery.
+        </p>
+      </>
     ),
+    illustration: <PoisonDiagram />,
   },
   {
     title: "When should I use a message queue?",
     summary:
-      "Anytime work can happen later, speeds differ, or you need to survive crashes.",
+      "Use a queue when work can happen later, speeds differ, or you need resilience.",
     body: (
-      <p className="text-sm leading-relaxed">
-        Use a queue when work can safely happen later, when producers and
-        consumers have different speeds, when you need to survive consumer
-        crashes, or when you want to scale workers independently. Common
-        examples: order processing, email sending, image resizing, log
-        aggregation, and event streaming between microservices.
-      </p>
+      <>
+        <p className="text-sm leading-relaxed">
+          Message queues shine in these scenarios:
+        </p>
+        <ul className="text-sm leading-relaxed flex flex-col gap-1.5">
+          <li className="flex gap-2">
+            <span className="font-black text-swiss-accent shrink-0">+</span>
+            <span>
+              <strong>Background jobs</strong>: send emails, resize images,
+              generate PDFs, process video. The user clicks and gets a
+              response immediately; the work happens behind the scenes.
+            </span>
+          </li>
+          <li className="flex gap-2">
+            <span className="font-black text-swiss-accent shrink-0">+</span>
+            <span>
+              <strong>Event-driven microservices</strong>: service A emits
+              "order.placed", services B (inventory), C (billing), and D
+              (shipping) react independently.
+            </span>
+          </li>
+          <li className="flex gap-2">
+            <span className="font-black text-swiss-accent shrink-0">+</span>
+            <span>
+              <strong>Data pipelines</strong>: ingest logs, metrics, or
+              analytics events in large volumes. Kafka and Pulsar excel here.
+            </span>
+          </li>
+          <li className="flex gap-2">
+            <span className="font-black text-swiss-accent shrink-0">+</span>
+            <span>
+              <strong>Rate decoupling</strong>: a sensor reads 10,000
+              readings/sec but the database only writes 1,000/sec. The queue
+              absorbs the difference.
+            </span>
+          </li>
+          <li className="flex gap-2">
+            <span className="font-black text-swiss-accent shrink-0">+</span>
+            <span>
+              <strong>Error resilience</strong>: if a worker crashes, the
+              queue holds its work. No data loss, no need for complex recovery
+              logic.
+            </span>
+          </li>
+        </ul>
+      </>
+    ),
+    illustration: (
+      <div className="text-sm leading-relaxed bg-swiss-muted border-2 border-black p-3 flex flex-col gap-2">
+        <span className="font-black text-xs uppercase tracking-widest text-swiss-accent">
+          Good fit checklist
+        </span>
+        <label className="flex items-center gap-2 text-xs">
+          <input type="checkbox" checked readOnly className="accent-swiss-accent" />
+          Work can happen asynchronously
+        </label>
+        <label className="flex items-center gap-2 text-xs">
+          <input type="checkbox" checked readOnly className="accent-swiss-accent" />
+          Producer and consumer have different speeds
+        </label>
+        <label className="flex items-center gap-2 text-xs">
+          <input type="checkbox" checked readOnly className="accent-swiss-accent" />
+          You need to survive consumer crashes
+        </label>
+        <label className="flex items-center gap-2 text-xs">
+          <input type="checkbox" checked readOnly className="accent-swiss-accent" />
+          You want to scale workers independently
+        </label>
+        <label className="flex items-center gap-2 text-xs">
+          <input type="checkbox" checked readOnly className="accent-swiss-accent" />
+          Traffic arrives in bursts
+        </label>
+      </div>
+    ),
+  },
+  {
+    title: "Which open source message queue should I use?",
+    summary:
+      "RabbitMQ, Apache Kafka, Redis, NATS, Pulsar: each fits different use cases.",
+    body: (
+      <>
+        <p className="text-sm leading-relaxed">
+          The best broker depends on what you're building. Here's a breakdown
+          of popular open source options and when to reach for each:
+        </p>
+        <div className="flex flex-col gap-3">
+          <div className="border-2 border-black p-3 text-sm leading-relaxed">
+            <a
+              href="https://www.rabbitmq.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-black uppercase tracking-widest text-swiss-accent text-xs hover:underline"
+            >
+              RabbitMQ ↗
+            </a>
+            <p className="mt-1">
+              The best general-purpose choice. Supports AMQP, MQTT, and
+              STOMP. Excellent routing (direct, topic, fanout, headers),
+              reliable delivery, and a mature ecosystem.
+            </p>
+            <p className="text-xs opacity-60 mt-1">
+              Best for: work queues, pub/sub, routing. A great first queue.
+            </p>
+          </div>
+          <div className="border-2 border-black p-3 text-sm leading-relaxed">
+            <a
+              href="https://kafka.apache.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-black uppercase tracking-widest text-swiss-accent text-xs hover:underline"
+            >
+              Apache Kafka ↗
+            </a>
+            <p className="mt-1">
+              Built for high-throughput event streaming. Messages are
+              persisted on disk and replayable. Handles millions of
+              messages/second with horizontal scaling.
+            </p>
+            <p className="text-xs opacity-60 mt-1">
+              Best for: data pipelines, log aggregation, event sourcing,
+              analytics.
+            </p>
+          </div>
+          <div className="border-2 border-black p-3 text-sm leading-relaxed">
+            <a
+              href="https://redis.io/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-black uppercase tracking-widest text-swiss-accent text-xs hover:underline"
+            >
+              Redis (Streams / Lists) ↗
+            </a>
+            <p className="mt-1">
+              In-memory, lightweight, sub-millisecond latency. Redis Streams
+              provide consumer groups and persistent queues. No built-in
+              routing or exchanges.
+            </p>
+            <p className="text-xs opacity-60 mt-1">
+              Best for: simple queues, real-time data, caching layers,
+              lightweight pub/sub.
+            </p>
+          </div>
+          <div className="border-2 border-black p-3 text-sm leading-relaxed">
+            <a
+              href="https://nats.io/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-black uppercase tracking-widest text-swiss-accent text-xs hover:underline"
+            >
+              NATS ↗
+            </a>
+            <p className="mt-1">
+              Ultra-fast, cloud-native messaging. Supports at-most-once and
+              at-least-once delivery, pub/sub, request-reply, and JetStream
+              for persistence.
+            </p>
+            <p className="text-xs opacity-60 mt-1">
+              Best for: IoT, microservices, real-time control systems, edge
+              computing.
+            </p>
+          </div>
+          <div className="border-2 border-black p-3 text-sm leading-relaxed">
+            <a
+              href="https://pulsar.apache.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-black uppercase tracking-widest text-swiss-accent text-xs hover:underline"
+            >
+              Apache Pulsar ↗
+            </a>
+            <p className="mt-1">
+              Multi-tenant, geo-replicated messaging with native support for
+              both queues and streams. Separates compute and storage for
+              elastic scaling.
+            </p>
+            <p className="text-xs opacity-60 mt-1">
+              Best for: large-scale deployments, multi-region, mixed
+              queue/stream workloads.
+            </p>
+          </div>
+          <div className="border-2 border-black p-3 text-sm leading-relaxed">
+            <a
+              href="https://activemq.apache.org/components/artemis/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-black uppercase tracking-widest text-swiss-accent text-xs hover:underline"
+            >
+              ActiveMQ / Artemis ↗
+            </a>
+            <p className="mt-1">
+              The JMS standard. Fits enterprise Java environments, supports
+              XA transactions, and integrates with Jakarta EE.
+            </p>
+            <p className="text-xs opacity-60 mt-1">
+              Best for: enterprise Java applications, JMS compliance,
+              transactional messaging.
+            </p>
+          </div>
+          <div className="border-2 border-black p-3 text-sm leading-relaxed">
+            <a
+              href="https://zeromq.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-black uppercase tracking-widest text-swiss-accent text-xs hover:underline"
+            >
+              ZeroMQ (ZMQ) ↗
+            </a>
+            <p className="mt-1">
+              Not a broker: it's a low-level messaging library you embed in
+              your application. Gives you sockets, patterns (pub/sub,
+              push/pull, req/rep), and no central broker.
+            </p>
+            <p className="text-xs opacity-60 mt-1">
+              Best for: embedded messaging, low-latency systems, custom
+              topologies.
+            </p>
+          </div>
+        </div>
+      </>
     ),
   },
 ];
 
 export function FaqSection() {
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 max-w-5xl mx-auto">
       {FAQ_ITEMS.map((item) => (
         <CollapsibleSection
           key={item.title}
           title={item.title}
           summary={item.summary}
+          illustration={item.illustration}
         >
           {item.body}
         </CollapsibleSection>
@@ -949,10 +1480,12 @@ function CollapsibleSection({
   title,
   summary,
   children,
+  illustration,
 }: {
   title: string;
   summary: string;
   children: React.ReactNode;
+  illustration?: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -975,8 +1508,16 @@ function CollapsibleSection({
         />
       </button>
       {open && (
-        <div className="px-4 pb-4 pt-4 border-t-2 border-black flex flex-col gap-3">
+        <div className="border-t-2 border-black p-4 flex flex-col gap-4">
           {children}
+          {illustration && (
+            <div className="flex flex-col gap-2">
+              <span className="font-black text-[10px] uppercase tracking-widest text-swiss-accent">
+                Visual
+              </span>
+              {illustration}
+            </div>
+          )}
         </div>
       )}
     </div>
