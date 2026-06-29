@@ -1,8 +1,15 @@
 import { useStore } from "../sim/store";
 import { computePositions } from "./positions";
+import type { Pos } from "./positions";
 import { ProducerNode, ConsumerNode, QueueNode, ExchangeNode } from "./Nodes";
 import { MessageLayer } from "./MessageLayer";
-import { Plus } from "lucide-react";
+import { Plus, Minus, AlertTriangle } from "lucide-react";
+
+interface PathLabel {
+  from: Pos;
+  to: Pos;
+  text: string;
+}
 
 export function Canvas({
   selected,
@@ -14,19 +21,95 @@ export function Canvas({
   const sim = useStore((s) => s.sim);
   const addProducer = useStore((s) => s.addProducer);
   const addConsumer = useStore((s) => s.addConsumer);
+  const removeProducer = useStore((s) => s.removeProducer);
+  const removeConsumer = useStore((s) => s.removeConsumer);
   const pos = computePositions(sim);
 
+  const labels = computePathLabels(sim, pos);
+
+  const fullQueues = sim.queues.filter((q) => !q.isDlq && q.depth.length >= q.capacity);
+  const isFlooding = sim.flooded;
+
   return (
-    <div
-      className="relative w-full flex-1 min-h-[480px] border-2 border-black bg-white swiss-grid-pattern overflow-hidden"
-      onClick={() => onSelect(null)}
-    >
+    <div className="flex flex-col gap-3 flex-1">
+      {/* toolbar */}
+      <div className="flex items-center gap-0 border-2 border-black">
+        <AddToolbarButton
+          label="ADD PRODUCER"
+          count={sim.producers.length}
+          max={8}
+          onClick={() => addProducer()}
+        />
+        <RemoveToolbarButton
+          label="REMOVE PRODUCER"
+          count={sim.producers.length}
+          onClick={() => {
+            const last = sim.producers[sim.producers.length - 1];
+            if (last) removeProducer(last.id);
+          }}
+        />
+        <AddToolbarButton
+          label="ADD CONSUMER"
+          count={sim.consumers.length}
+          max={sim.pattern === "simple" ? 1 : 8}
+          onClick={() => addConsumer()}
+        />
+        <RemoveToolbarButton
+          label="REMOVE CONSUMER"
+          count={sim.consumers.length}
+          onClick={() => {
+            const last = sim.consumers[sim.consumers.length - 1];
+            if (last) removeConsumer(last.id);
+          }}
+        />
+      </div>
+
+      {/* flood warning bar — latched, stays once shown */}
+      {isFlooding && (
+        <div className="flex items-center gap-2 px-4 py-2 bg-swiss-accent text-white border-2 border-black">
+          <AlertTriangle size={16} strokeWidth={2.5} />
+          <span className="font-black text-xs uppercase tracking-widest">
+            {sim.droppedTotal > 0
+              ? `QUEUE FLOODED / ${sim.droppedTotal} MESSAGE${sim.droppedTotal > 1 ? "S" : ""} DROPPED`
+              : "BACKPRESSURE ACTIVE / PRODUCERS BLOCKED"}
+          </span>
+          <span className="font-medium text-xs uppercase tracking-wider opacity-80">
+            {fullQueues.length > 0
+              ? `${fullQueues.length} queue${fullQueues.length > 1 ? "s" : ""} at full capacity`
+              : "producers were blocked"}
+          </span>
+        </div>
+      )}
+
+      {/* canvas */}
+      <div
+        className={`relative w-full flex-1 min-h-[480px] border-2 bg-white swiss-grid-pattern overflow-visible transition-colors duration-200 ${
+          isFlooding ? "border-swiss-accent" : "border-black"
+        }`}
+        onClick={() => onSelect(null)}
+      >
       {/* connection paths */}
       <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
         {sim.hasExchange
           ? drawFanoutPaths(sim, pos)
           : drawDirectPaths(sim, pos)}
       </svg>
+
+      {/* path labels — HTML, not SVG, to avoid stretch */}
+      {labels.map((l, i) => (
+        <div
+          key={i}
+          className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-none z-5"
+          style={{
+            left: `${(l.from.x + l.to.x) / 2}%`,
+            top: `${(l.from.y + l.to.y) / 2}%`,
+          }}
+        >
+          <span className="px-1.5 py-0.5 bg-white border border-black text-[9px] font-bold uppercase tracking-widest opacity-50 whitespace-nowrap">
+            {l.text}
+          </span>
+        </div>
+      ))}
 
       {/* nodes */}
       {sim.producers.map((p) => (
@@ -78,70 +161,64 @@ export function Canvas({
       ))}
 
       <MessageLayer sim={sim} pos={pos} />
-
-      {/* add buttons */}
-      <AddButton
-        x={7}
-        y={sim.producers.length > 0 ? spreadY(sim.producers.length, sim.producers.length) : 50}
-        onClick={(e) => {
-          e.stopPropagation();
-          addProducer();
-        }}
-        disabled={sim.producers.length >= 8}
-        label="PRODUCER"
-      />
-      <AddButton
-        x={90}
-        y={sim.consumers.length > 0 ? spreadY(sim.consumers.length, sim.consumers.length) : 50}
-        onClick={(e) => {
-          e.stopPropagation();
-          if (sim.pattern === "simple" && sim.consumers.length >= 1) return;
-          addConsumer();
-        }}
-        disabled={
-          sim.consumers.length >= 8 ||
-          (sim.pattern === "simple" && sim.consumers.length >= 1)
-        }
-        label="CONSUMER"
-      />
+      </div>
     </div>
   );
 }
 
-function spreadY(count: number, i: number): number {
-  if (count <= 1) return 50;
-  return 15 + (70 * i) / count;
+function AddToolbarButton({
+  label,
+  count,
+  max,
+  onClick,
+}: {
+  label: string;
+  count: number;
+  max: number;
+  onClick: () => void;
+}) {
+  const disabled = count >= max;
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold uppercase tracking-widest border-r-2 border-black last:border-r-0 transition-colors duration-200 ease-out ${
+        disabled
+          ? "bg-swiss-muted opacity-40 cursor-not-allowed"
+          : "bg-white hover:bg-black hover:text-white"
+      }`}
+    >
+      <Plus size={14} strokeWidth={2.5} className={disabled ? "" : "transition-transform duration-200 group-hover:rotate-90"} />
+      {label}
+      <span className="opacity-50">{count}/{max}</span>
+    </button>
+  );
 }
 
-function AddButton({
-  x,
-  y,
-  onClick,
-  disabled,
+function RemoveToolbarButton({
   label,
+  count,
+  onClick,
 }: {
-  x: number;
-  y: number;
-  onClick: (e: React.MouseEvent) => void;
-  disabled?: boolean;
   label: string;
+  count: number;
+  onClick: () => void;
 }) {
+  const disabled = count === 0;
   return (
-    <div
-      className="absolute -translate-x-1/2 -translate-y-1/2 z-10"
-      style={{ left: `${x}%`, top: `${y}%` }}
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold uppercase tracking-widest border-r-2 border-black last:border-r-0 transition-colors duration-200 ease-out ${
+        disabled
+          ? "bg-swiss-muted opacity-40 cursor-not-allowed"
+          : "bg-white hover:bg-swiss-accent hover:text-white"
+      }`}
     >
-      <button
-        onClick={onClick}
-        disabled={disabled}
-        title={`Add ${label}`}
-        className={`w-10 h-10 flex items-center justify-center border-2 border-black bg-white transition-all duration-200 ease-out rounded-none ${
-          disabled ? "opacity-20 cursor-not-allowed" : "hover:bg-black hover:text-white hover:rotate-90"
-        }`}
-      >
-        <Plus size={18} strokeWidth={2.5} />
-      </button>
-    </div>
+      <Minus size={14} strokeWidth={2.5} />
+      {label}
+      <span className="opacity-50">{count}</span>
+    </button>
   );
 }
 
@@ -181,4 +258,41 @@ function drawFanoutPaths(sim: ReturnType<typeof useStore.getState>["sim"], pos: 
       })}
     </>
   );
+}
+
+function computePathLabels(
+  sim: ReturnType<typeof useStore.getState>["sim"],
+  pos: Record<string, Pos>
+): PathLabel[] {
+  const labels: PathLabel[] = [];
+  const realQueues = sim.queues.filter((q) => !q.isDlq);
+
+  if (sim.hasExchange) {
+    const ex = pos["exchange"];
+    sim.producers.forEach((p) => {
+      labels.push({ from: pos[p.id], to: ex, text: "PUBLISH" });
+    });
+    realQueues.forEach((q) => {
+      labels.push({
+        from: ex,
+        to: pos[q.id],
+        text: sim.pattern === "pubsub" ? "FANOUT" : "ROUTE",
+      });
+    });
+    realQueues.forEach((q) => {
+      const c = sim.consumers.find((c) => c.queueId === q.id);
+      if (c) labels.push({ from: pos[q.id], to: pos[c.id], text: "CONSUME" });
+    });
+  } else {
+    const q = realQueues[0];
+    if (!q) return labels;
+    sim.producers.forEach((p) => {
+      labels.push({ from: pos[p.id], to: pos[q.id], text: "PRODUCE" });
+    });
+    sim.consumers.forEach((c) => {
+      labels.push({ from: pos[q.id], to: pos[c.id], text: "CONSUME" });
+    });
+  }
+
+  return labels;
 }

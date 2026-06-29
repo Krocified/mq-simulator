@@ -69,6 +69,7 @@ export interface MetricSnapshot {
 
 export interface SimState {
   pattern: Pattern;
+  presetId: string;
   producers: Producer[];
   consumers: Consumer[];
   queues: Queue[];
@@ -86,6 +87,10 @@ export interface SimState {
   nackedTotal: number;
   requeuedTotal: number;
   dlqdTotal: number;
+  droppedTotal: number;
+  flooded: boolean; // latches on once flooding starts, stays until reset
+  everKilled: boolean; // latches on once any consumer is killed
+  everNacked: boolean; // latches on once any nack occurs
   history: MetricSnapshot[]; // last N snapshots
   producerColors: string[];
   metricTimer: number; // accumulates for metric sampling

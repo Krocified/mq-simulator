@@ -92,7 +92,7 @@ Maxes enforced in UI (disable "Add" at cap). Hard message cap protects frame bud
 ## 7. Animation & visualization
 
 - **Pathing**: bezier curves producer→queue, queue→consumer. In pub/sub/routing, exchange is a fork point with fanout curves.
-- **Message tokens**: small wobbly cards (per design system — see `AGENTS.md`). Color hue = producer id; small id label on hover.
+- **Message tokens**: small wobbly cards (per design system — see AGENTS.md). Color hue = producer id; small id label on hover.
 - **States visualized**:
   - In-flight (traveling) — token animates along path.
   - Queued — token stacks visibly in the queue column, newest at top.
@@ -106,7 +106,7 @@ Maxes enforced in UI (disable "Add" at cap). Hard message cap protects frame bud
 
 ## 8. UI/UX
 
-Follows the **Hand-Drawn design system** in `AGENTS.md`. Specifically:
+Follows the **Swiss International design system** in AGENTS.md. Specifically:
 
 - Canvas = large wobbly card with paper-dot background. Producers/consumers/queues = wobbly nodes with hard offset shadows.
 - Control bar = sticky bottom or left rail, wobbly buttons (play/pause/step/reset per design system button spec).

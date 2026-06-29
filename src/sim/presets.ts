@@ -145,6 +145,7 @@ export function buildSimState(cfg: PresetConfig): SimState {
 
   const state: SimState = {
     pattern: cfg.pattern,
+    presetId: cfg.id,
     producers,
     consumers,
     queues: [],
@@ -161,6 +162,10 @@ export function buildSimState(cfg: PresetConfig): SimState {
     nackedTotal: 0,
     requeuedTotal: 0,
     dlqdTotal: 0,
+    droppedTotal: 0,
+    flooded: false,
+    everKilled: false,
+    everNacked: false,
     history: [],
     producerColors: PRODUCER_COLORS,
     metricTimer: 0,

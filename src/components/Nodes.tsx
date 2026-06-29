@@ -24,7 +24,7 @@ export function NodeShell({
       onClick={onClick}
       className={`group absolute -translate-x-1/2 -translate-y-1/2 ${onClick ? "cursor-pointer" : ""} ${
         selected ? "z-20" : "z-10"
-      } ${className}`}
+      } hover:z-40 ${className}`}
       style={{ left: `${x}%`, top: `${y}%` }}
     >
       {children}
@@ -79,9 +79,9 @@ export function ProducerNode({
       }
     >
       <div
-        className={`w-20 h-20 md:w-24 md:h-24 flex flex-col items-center justify-center border-2 border-black rounded-none transition-all duration-200 ease-out ${
+        className={`w-20 h-20 md:w-24 md:h-24 flex flex-col items-center justify-center border-2 border-black rounded-none transition-colors duration-200 ease-out ${
           selected ? "bg-swiss-accent text-white" : "bg-white text-black hover:-translate-y-0.5"
-        } ${p.blocked ? "border-swiss-accent border-4" : ""}`}
+        } ${p.blocked ? "border-swiss-accent" : ""}`}
       >
         <span className="font-black text-sm md:text-base uppercase tracking-tighter">P{p.id.slice(1)}</span>
         <span className="font-medium text-xs md:text-sm uppercase tracking-wider opacity-70">{p.rate.toFixed(1)}/S</span>
@@ -116,7 +116,7 @@ export function ConsumerNode({
           <span className="font-black text-sm">CONSUMER C{c.id.slice(1)}</span>
           <span>THROUGHPUT: {c.throughput.toFixed(1)}/S</span>
           <span>ACK: {c.ackPct}%</span>
-          <span>ACKED: {c.totalAcked} · NACKED: {c.totalNacked}</span>
+          <span>ACKED: {c.totalAcked} / NACKED: {c.totalNacked}</span>
           {c.inFlight.length > 0 && <span>IN-FLIGHT: {c.inFlight.length}</span>}
           {c.paused && <span className="text-swiss-accent">PAUSED</span>}
           {c.killed && <span className="text-swiss-accent">KILLED</span>}
@@ -170,13 +170,13 @@ export function QueueNode({
           <span>DEPTH: {q.depth.length} / {q.capacity}</span>
           <span>FILL: {Math.round(pct)}%</span>
           {pattern === "routing" && q.bindingKey && <span>BIND: {q.bindingKey}</span>}
-          {full && <span className="text-swiss-accent">FULL — PRODUCERS BLOCKED</span>}
+          {full && <span className="text-swiss-accent">FULL, PRODUCERS BLOCKED</span>}
         </div>
       }
     >
       <div
-        className={`w-28 md:w-32 border-2 border-black rounded-none transition-all duration-200 ${
-          full ? "border-swiss-accent border-4" : ""
+        className={`w-28 md:w-32 border-2 border-black rounded-none transition-colors duration-200 ${
+          full ? "border-swiss-accent" : ""
         } ${selected ? "bg-swiss-accent text-white" : "bg-white"}`}
       >
         <div className="px-3 py-2 flex flex-col gap-1">

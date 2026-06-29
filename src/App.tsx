@@ -4,6 +4,8 @@ import { Controls } from "./components/Controls";
 import { PresetBar } from "./components/PresetBar";
 import { NodeConfig } from "./components/NodeConfig";
 import { MetricsPanel } from "./components/MetricsPanel";
+import { LearnPanel } from "./components/LearnPanel";
+import { DemoActions } from "./components/DemoActions";
 import { useStore } from "./sim/store";
 import { Link2, Copy } from "lucide-react";
 
@@ -25,25 +27,28 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      {/* header — asymmetric, thick border */}
-      <header className="border-b-4 border-black px-6 md:px-12 py-6 md:py-8 flex flex-wrap items-end justify-between gap-4 swiss-grid-pattern">
-        <div>
-          <span className="font-black text-xs uppercase tracking-widest text-swiss-accent block mb-1">01. SYSTEM</span>
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-black uppercase tracking-tighter leading-[0.9]">
+      {/* header — compact single row */}
+      <header className="border-b-2 border-black px-4 md:px-6 py-3 flex items-center justify-between gap-4 bg-swiss-muted swiss-dots">
+        <div className="flex items-baseline gap-3">
+          <h1 className="text-xl md:text-2xl font-black uppercase tracking-tighter leading-none">
             MQ Simulator
           </h1>
-          <p className="font-medium text-sm md:text-base uppercase tracking-wider opacity-60 mt-2">
+          <span className="font-medium text-xs uppercase tracking-widest opacity-50 hidden sm:inline">
             See the queue breathe
-          </p>
+          </span>
         </div>
         <div className="flex items-center gap-3">
           <PresetBar />
           <button
             onClick={handleShare}
-            className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold uppercase tracking-widest border-2 border-black bg-white hover:bg-black hover:text-white transition-colors duration-200 ease-out"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-widest border-2 border-black bg-white hover:bg-black hover:text-white transition-colors duration-200 ease-out"
             title="Copy shareable URL"
           >
-            {copied ? <Copy size={14} strokeWidth={2.5} /> : <Link2 size={14} strokeWidth={2.5} />}
+            {copied ? (
+              <Copy size={14} strokeWidth={2.5} />
+            ) : (
+              <Link2 size={14} strokeWidth={2.5} />
+            )}
             {copied ? "COPIED" : "SHARE"}
           </button>
         </div>
@@ -58,10 +63,15 @@ export default function App() {
         {/* sidebar */}
         <aside className="lg:col-span-4 flex flex-col border-t-4 lg:border-t-0 border-black">
           <div className="border-b-2 border-black p-4 bg-swiss-muted swiss-dots">
-            <span className="font-black text-xs uppercase tracking-widest text-swiss-accent block mb-3">02. METRICS</span>
+            <span className="font-black text-xs uppercase tracking-widest text-swiss-accent block mb-3">
+              02. METRICS
+            </span>
             <MetricsPanel />
           </div>
-          <div className="p-4 flex-1">
+          <div className="border-b-2 border-black p-4 bg-white">
+            <DemoActions />
+          </div>
+          <div className="p-4 flex-1 min-h-[285px]">
             <NodeConfig selected={selected} />
           </div>
         </aside>
@@ -72,8 +82,16 @@ export default function App() {
         <Controls />
       </div>
 
+      {/* learn panel */}
+      <div className="px-4 md:px-6 py-4 border-t-2 border-black bg-swiss-muted swiss-grid-pattern">
+        <span className="font-black text-xs uppercase tracking-widest text-swiss-accent block mb-3">
+          03. WHAT'S HAPPENING
+        </span>
+        <LearnPanel />
+      </div>
+
       <footer className="px-6 md:px-12 py-4 border-t-2 border-black font-medium text-xs uppercase tracking-widest opacity-50">
-        Educational simulator · semantics modeled, not wire-accurate
+        Educational simulator, semantics modeled, not wire-accurate
       </footer>
     </div>
   );

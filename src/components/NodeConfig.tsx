@@ -106,12 +106,12 @@ export function NodeConfig({ selected }: { selected: string | null }) {
               </span>
             </Button>
           )}
+          <RemoveButton onClick={() => removeConsumer(consumer.id)} />
         </div>
         <div className="flex gap-4 text-xs uppercase tracking-wider opacity-60">
           <span>ACKED: {consumer.totalAcked}</span>
           <span>NACKED: {consumer.totalNacked}</span>
         </div>
-        <RemoveButton onClick={() => removeConsumer(consumer.id)} />
       </Panel>
     );
   }

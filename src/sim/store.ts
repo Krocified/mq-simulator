@@ -97,6 +97,10 @@ export const useStore = create<Store>((set, get) => ({
       sim.nackedTotal = 0;
       sim.requeuedTotal = 0;
       sim.dlqdTotal = 0;
+      sim.droppedTotal = 0;
+      sim.flooded = false;
+      sim.everKilled = false;
+      sim.everNacked = false;
       sim.history = [];
       sim.metricTimer = 0;
       sim.queues.forEach((q) => (q.depth = []));

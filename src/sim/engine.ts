@@ -16,6 +16,15 @@ export function tick(s: SimState, dt: number) {
   processConsumers(s, dt);
   sampleMetrics(s, dt);
   gcMessages(s);
+
+  // latch flags once conditions first appear, stay until reset
+  if (!s.flooded) {
+    const anyFull = s.queues.some((q) => !q.isDlq && q.depth.length >= q.capacity);
+    const anyBlocked = s.producers.some((p) => p.blocked);
+    if (anyFull || anyBlocked) s.flooded = true;
+  }
+  if (!s.everKilled && s.consumers.some((c) => c.killed)) s.everKilled = true;
+  if (!s.everNacked && s.nackedTotal > 0) s.everNacked = true;
 }
 
 function advanceMessages(s: SimState, dt: number) {
@@ -61,7 +70,7 @@ function advanceMessages(s: SimState, dt: number) {
 function arriveAtQueue(s: SimState, m: Message) {
   const q = s.queues.find((q) => q.id === m.toNode);
   if (!q || q.depth.length >= q.capacity) {
-    // queue full or gone: drop (overflow loss)
+    s.droppedTotal++;
     removeMessage(s, m.id);
     return;
   }
@@ -80,7 +89,10 @@ function fanoutFromExchange(s: SimState, m: Message) {
   });
   removeMessage(s, m.id); // original consumed by exchange
   for (const q of targets) {
-    if (q.depth.length >= q.capacity) continue; // overflow drop
+    if (q.depth.length >= q.capacity) {
+      s.droppedTotal++;
+      continue;
+    }
     const copy = makeMessage(s, m.producerId, m.color, m.routingKey);
     copy.deliveries = m.deliveries;
     copy.state = "exchange-to-queue";
