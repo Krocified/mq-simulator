@@ -13,8 +13,8 @@ export function NodeConfig({ selected }: { selected: string | null }) {
 
   if (!selected) {
     return (
-      <div className="p-4 font-body text-sm text-ink/50 text-center">
-        Click a node to configure it.
+      <div className="p-6 font-medium text-xs uppercase tracking-widest opacity-40 text-center">
+        Click a node to configure
       </div>
     );
   }
@@ -25,7 +25,7 @@ export function NodeConfig({ selected }: { selected: string | null }) {
 
   if (producer) {
     return (
-      <Panel title={`Producer P${producer.id.slice(1)}`} color={producer.color}>
+      <Panel title={`02. PRODUCER P${producer.id.slice(1)}`}>
         <Slider
           label="Rate (msgs/sec)"
           min={0.1}
@@ -42,7 +42,7 @@ export function NodeConfig({ selected }: { selected: string | null }) {
             placeholder="logs.error.app1"
           />
         )}
-        <div className="text-xs text-ink/50 font-body">Emitted: {producer.totalEmitted}</div>
+        <div className="text-xs uppercase tracking-wider opacity-60">EMITTED: {producer.totalEmitted}</div>
         <RemoveButton onClick={() => removeProducer(producer.id)} />
       </Panel>
     );
@@ -50,7 +50,7 @@ export function NodeConfig({ selected }: { selected: string | null }) {
 
   if (consumer) {
     return (
-      <Panel title={`Consumer C${consumer.id.slice(1)}`}>
+      <Panel title={`03. CONSUMER C${consumer.id.slice(1)}`}>
         <Slider
           label="Throughput (msgs/sec)"
           min={0.1}
@@ -82,9 +82,9 @@ export function NodeConfig({ selected }: { selected: string | null }) {
             active={consumer.paused}
             onClick={() => updateConsumer(consumer.id, { paused: !consumer.paused })}
           >
-            <span className="flex items-center gap-1 text-sm">
-              {consumer.paused ? <Play size={14} strokeWidth={3} /> : <Pause size={14} strokeWidth={3} />}
-              {consumer.paused ? "Resume" : "Pause"}
+            <span className="flex items-center gap-1">
+              {consumer.paused ? <Play size={12} strokeWidth={2.5} /> : <Pause size={12} strokeWidth={2.5} />}
+              {consumer.paused ? "RESUME" : "PAUSE"}
             </span>
           </Button>
           {consumer.killed ? (
@@ -92,8 +92,8 @@ export function NodeConfig({ selected }: { selected: string | null }) {
               variant="ghost"
               onClick={() => updateConsumer(consumer.id, { killed: false })}
             >
-              <span className="flex items-center gap-1 text-sm">
-                <RotateCcw size={14} strokeWidth={2.5} /> Revive
+              <span className="flex items-center gap-1">
+                <RotateCcw size={12} strokeWidth={2.5} /> REVIVE
               </span>
             </Button>
           ) : (
@@ -101,15 +101,15 @@ export function NodeConfig({ selected }: { selected: string | null }) {
               variant="ghost"
               onClick={() => updateConsumer(consumer.id, { killed: true })}
             >
-              <span className="flex items-center gap-1 text-sm">
-                <Skull size={14} strokeWidth={2.5} /> Kill
+              <span className="flex items-center gap-1">
+                <Skull size={12} strokeWidth={2.5} /> KILL
               </span>
             </Button>
           )}
         </div>
-        <div className="flex gap-4 text-xs text-ink/50 font-body">
-          <span>Acked: {consumer.totalAcked}</span>
-          <span>Nacked: {consumer.totalNacked}</span>
+        <div className="flex gap-4 text-xs uppercase tracking-wider opacity-60">
+          <span>ACKED: {consumer.totalAcked}</span>
+          <span>NACKED: {consumer.totalNacked}</span>
         </div>
         <RemoveButton onClick={() => removeConsumer(consumer.id)} />
       </Panel>
@@ -118,7 +118,7 @@ export function NodeConfig({ selected }: { selected: string | null }) {
 
   if (queue) {
     return (
-      <Panel title="Queue">
+      <Panel title="04. QUEUE">
         <Slider
           label="Capacity"
           min={10}
@@ -135,8 +135,8 @@ export function NodeConfig({ selected }: { selected: string | null }) {
           value={sim.maxRedeliveries}
           onChange={(v) => setMaxRedeliveries(v)}
         />
-        <div className="text-xs text-ink/50 font-body">
-          Depth: {queue.depth.length} / {queue.capacity}
+        <div className="text-xs uppercase tracking-wider opacity-60">
+          DEPTH: {queue.depth.length} / {queue.capacity}
         </div>
       </Panel>
     );
@@ -145,15 +145,10 @@ export function NodeConfig({ selected }: { selected: string | null }) {
   return null;
 }
 
-function Panel({ title, children, color }: { title: string; children: React.ReactNode; color?: string }) {
+function Panel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="p-4 flex flex-col gap-3">
-      <div className="flex items-center gap-2">
-        {color && (
-          <div className="w-3 h-3 border border-ink" style={{ borderRadius: "60% 40% 50% 50%", background: color }} />
-        )}
-        <h3 className="font-heading font-bold text-base">{title}</h3>
-      </div>
+      <h3 className="font-black text-sm uppercase tracking-widest text-swiss-accent border-b-2 border-black pb-2">{title}</h3>
       {children}
     </div>
   );
@@ -176,7 +171,7 @@ function Slider({
 }) {
   return (
     <label className="flex flex-col gap-1">
-      <span className="font-body text-sm text-ink/70">{label}: <span className="font-heading text-ink">{value}</span></span>
+      <span className="font-medium text-xs uppercase tracking-wider opacity-70">{label}: <span className="font-black text-black">{value}</span></span>
       <input
         type="range"
         min={min}
@@ -184,7 +179,6 @@ function Slider({
         step={step}
         value={value}
         onChange={(e) => onChange(parseFloat(e.target.value))}
-        className="accent-ballpoint"
       />
     </label>
   );
@@ -205,15 +199,14 @@ function TextInput({
 }) {
   return (
     <label className="flex flex-col gap-1">
-      <span className="font-body text-sm text-ink/70">{label}</span>
+      <span className="font-medium text-xs uppercase tracking-wider opacity-70">{label}</span>
       <input
         type="text"
         value={value}
         readOnly={readOnly}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
-        className="px-2 py-1 border-2 border-ink bg-white text-sm font-body focus:border-ballpoint focus:outline-none focus:ring-2 focus:ring-ballpoint/20"
-        style={{ borderRadius: "65px 8px 70px 8px / 8px 70px 8px 65px" }}
+        className="px-2 py-1.5 border-2 border-black bg-white text-sm font-medium rounded-none focus:border-swiss-accent focus:outline-none"
       />
     </label>
   );
@@ -222,8 +215,8 @@ function TextInput({
 function RemoveButton({ onClick }: { onClick: () => void }) {
   return (
     <Button variant="ghost" onClick={onClick}>
-      <span className="flex items-center gap-1 text-sm">
-        <Trash2 size={14} strokeWidth={2.5} /> Remove
+      <span className="flex items-center gap-1">
+        <Trash2 size={12} strokeWidth={2.5} /> REMOVE
       </span>
     </Button>
   );

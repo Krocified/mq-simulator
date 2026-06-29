@@ -1,7 +1,4 @@
 import type { SimState, Producer, Consumer, Queue } from "../sim/types";
-import { WOBBLY_SM, WOBBLY_MD } from "../ui/wobbly";
-
-const TRAVEL_TIME = 0.25;
 
 export function NodeShell({
   x,
@@ -26,24 +23,23 @@ export function NodeShell({
     <div
       onClick={onClick}
       className={`group absolute -translate-x-1/2 -translate-y-1/2 ${onClick ? "cursor-pointer" : ""} ${
-        selected ? "ring-2 ring-ballpoint/40 z-20" : "z-10"
+        selected ? "z-20" : "z-10"
       } ${className}`}
       style={{ left: `${x}%`, top: `${y}%` }}
     >
       {children}
       {color && (
         <div
-          className="absolute -top-1 -left-1 w-3 h-3 border border-ink"
-          style={{ borderRadius: WOBBLY_SM, background: color }}
+          className="absolute -top-[2px] -left-[2px] w-3 h-3 bg-current"
+          style={{ background: color }}
         />
       )}
       {tooltip && (
         <div
           className="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-2 -translate-y-full
-                     opacity-0 group-hover:opacity-100 transition-opacity duration-100
-                     whitespace-nowrap bg-white border-2 border-ink shadow-[3px_3px_0px_0px_#2d2d2d]
-                     px-3 py-1.5 z-30"
-          style={{ borderRadius: WOBBLY_SM }}
+                     opacity-0 group-hover:opacity-100 transition-opacity duration-200
+                     whitespace-nowrap bg-black text-white border-2 border-black
+                     px-3 py-2 z-30 rounded-none"
         >
           {tooltip}
         </div>
@@ -73,27 +69,23 @@ export function ProducerNode({
       onClick={onClick}
       color={p.color}
       tooltip={
-        <div className="flex flex-col gap-0.5 font-body text-xs">
-          <span className="font-heading font-bold text-sm">Producer P{p.id.slice(1)}</span>
-          <span>Rate: <span className="text-ballpoint">{p.rate.toFixed(1)}/s</span></span>
-          {p.routingKey && <span>Key: <span className="text-ballpoint">{p.routingKey}</span></span>}
-          <span>Emitted: {p.totalEmitted}</span>
-          {p.blocked && <span className="text-accent">Blocked (queue full)</span>}
+        <div className="flex flex-col gap-0.5 text-xs uppercase tracking-wider">
+          <span className="font-black text-sm">PRODUCER P{p.id.slice(1)}</span>
+          <span>RATE: {p.rate.toFixed(1)}/S</span>
+          {p.routingKey && <span>KEY: {p.routingKey}</span>}
+          <span>EMITTED: {p.totalEmitted}</span>
+          {p.blocked && <span className="text-swiss-accent">BLOCKED</span>}
         </div>
       }
     >
       <div
-        className={`w-20 h-20 md:w-24 md:h-24 flex flex-col items-center justify-center bg-white border-[3px] border-ink shadow-[4px_4px_0px_0px_#2d2d2d] transition-transform duration-100 hover:-rotate-2 ${
-          p.blocked ? "animate-pulse" : ""
-        }`}
-        style={{
-          borderRadius: WOBBLY_MD,
-          borderColor: p.blocked ? "#ff4d4d" : undefined,
-        }}
+        className={`w-20 h-20 md:w-24 md:h-24 flex flex-col items-center justify-center border-2 border-black rounded-none transition-all duration-200 ease-out ${
+          selected ? "bg-swiss-accent text-white" : "bg-white text-black hover:-translate-y-0.5"
+        } ${p.blocked ? "border-swiss-accent border-4" : ""}`}
       >
-        <span className="font-heading font-bold text-sm md:text-base">P{p.id.slice(1)}</span>
-        <span className="font-body text-xs md:text-sm text-ink/70">{p.rate.toFixed(1)}/s</span>
-        {p.blocked && <span className="text-[10px] text-accent font-body">blocked</span>}
+        <span className="font-black text-sm md:text-base uppercase tracking-tighter">P{p.id.slice(1)}</span>
+        <span className="font-medium text-xs md:text-sm uppercase tracking-wider opacity-70">{p.rate.toFixed(1)}/S</span>
+        {p.blocked && <span className="text-[10px] text-swiss-accent font-bold uppercase">BLK</span>}
       </div>
     </NodeShell>
   );
@@ -112,7 +104,7 @@ export function ConsumerNode({
   selected?: boolean;
   onClick?: (e: React.MouseEvent) => void;
 }) {
-  const dim = c.killed ? "opacity-40 grayscale" : c.paused ? "opacity-60" : "";
+  const dim = c.killed ? "opacity-30" : c.paused ? "opacity-50" : "";
   return (
     <NodeShell
       x={x}
@@ -120,31 +112,28 @@ export function ConsumerNode({
       selected={selected}
       onClick={onClick}
       tooltip={
-        <div className="flex flex-col gap-0.5 font-body text-xs">
-          <span className="font-heading font-bold text-sm">Consumer C{c.id.slice(1)}</span>
-          <span>Throughput: <span className="text-ballpoint">{c.throughput.toFixed(1)}/s</span></span>
-          <span>Ack: <span className="text-ballpoint">{c.ackPct}%</span></span>
-          <span>Acked: {c.totalAcked} · Nacked: {c.totalNacked}</span>
-          {c.inFlight.length > 0 && <span>In-flight: {c.inFlight.length}</span>}
-          {c.paused && <span className="text-ballpoint">Paused</span>}
-          {c.killed && <span className="text-accent">Killed — in-flight nacked</span>}
+        <div className="flex flex-col gap-0.5 text-xs uppercase tracking-wider">
+          <span className="font-black text-sm">CONSUMER C{c.id.slice(1)}</span>
+          <span>THROUGHPUT: {c.throughput.toFixed(1)}/S</span>
+          <span>ACK: {c.ackPct}%</span>
+          <span>ACKED: {c.totalAcked} · NACKED: {c.totalNacked}</span>
+          {c.inFlight.length > 0 && <span>IN-FLIGHT: {c.inFlight.length}</span>}
+          {c.paused && <span className="text-swiss-accent">PAUSED</span>}
+          {c.killed && <span className="text-swiss-accent">KILLED</span>}
         </div>
       }
     >
       <div
-        className={`w-20 h-20 md:w-24 md:h-24 flex flex-col items-center justify-center bg-white border-[3px] border-ink shadow-[4px_4px_0px_0px_#2d2d2d] transition-transform duration-100 hover:rotate-1 ${dim}`}
-        style={{ borderRadius: WOBBLY_MD }}
+        className={`w-20 h-20 md:w-24 md:h-24 flex flex-col items-center justify-center border-2 border-black rounded-none transition-all duration-200 ease-out ${
+          selected ? "bg-swiss-accent text-white" : "bg-white text-black hover:-translate-y-0.5"
+        } ${dim}`}
       >
-        <span className="font-heading font-bold text-sm md:text-base">
-          C{c.id.slice(1)}
-        </span>
-        <span className="font-body text-xs md:text-sm text-ink/70">
-          {c.throughput.toFixed(1)}/s
-        </span>
-        {c.paused && <span className="text-[10px] text-ballpoint font-body">paused</span>}
-        {c.killed && <span className="text-[10px] text-accent font-body">dead</span>}
+        <span className="font-black text-sm md:text-base uppercase tracking-tighter">C{c.id.slice(1)}</span>
+        <span className="font-medium text-xs md:text-sm uppercase tracking-wider opacity-70">{c.throughput.toFixed(1)}/S</span>
+        {c.paused && <span className="text-[10px] font-bold uppercase">PAUSE</span>}
+        {c.killed && <span className="text-[10px] text-swiss-accent font-bold uppercase">DEAD</span>}
         {!c.paused && !c.killed && c.inFlight.length > 0 && (
-          <span className="text-[10px] text-ink/50 font-body">busy</span>
+          <span className="text-[10px] font-bold uppercase opacity-50">BUSY</span>
         )}
       </div>
     </NodeShell>
@@ -176,41 +165,35 @@ export function QueueNode({
       selected={selected}
       onClick={onClick}
       tooltip={
-        <div className="flex flex-col gap-0.5 font-body text-xs">
-          <span className="font-heading font-bold text-sm">Queue</span>
-          <span>Depth: <span className="text-ballpoint">{q.depth.length}</span> / {q.capacity}</span>
-          <span>Fill: {Math.round(pct)}%</span>
-          {pattern === "routing" && q.bindingKey && (
-            <span>Bind: <span className="text-ballpoint">{q.bindingKey}</span></span>
-          )}
-          {full && <span className="text-accent">Full — producers blocked</span>}
+        <div className="flex flex-col gap-0.5 text-xs uppercase tracking-wider">
+          <span className="font-black text-sm">QUEUE</span>
+          <span>DEPTH: {q.depth.length} / {q.capacity}</span>
+          <span>FILL: {Math.round(pct)}%</span>
+          {pattern === "routing" && q.bindingKey && <span>BIND: {q.bindingKey}</span>}
+          {full && <span className="text-swiss-accent">FULL — PRODUCERS BLOCKED</span>}
         </div>
       }
     >
       <div
-        className={`w-28 md:w-32 border-[3px] border-ink shadow-[4px_4px_0px_0px_#2d2d2d] transition-transform duration-100 ${
-          full ? "border-accent animate-pulse" : ""
-        }`}
-        style={{
-          borderRadius: WOBBLY_MD,
-          background: full ? "#fff0f0" : "#ffffff",
-        }}
+        className={`w-28 md:w-32 border-2 border-black rounded-none transition-all duration-200 ${
+          full ? "border-swiss-accent border-4" : ""
+        } ${selected ? "bg-swiss-accent text-white" : "bg-white"}`}
       >
         <div className="px-3 py-2 flex flex-col gap-1">
           <div className="flex justify-between items-center">
-            <span className="font-heading font-bold text-xs md:text-sm">Queue</span>
-            <span className="font-body text-xs text-ink/60">
+            <span className="font-black text-xs md:text-sm uppercase tracking-tighter">QUEUE</span>
+            <span className="font-medium text-xs uppercase tracking-wider opacity-70">
               {q.depth.length}/{q.capacity}
             </span>
           </div>
           {pattern === "routing" && q.bindingKey && (
-            <span className="font-body text-[10px] text-ballpoint truncate">
-              bind: {q.bindingKey}
+            <span className="font-medium text-[10px] uppercase tracking-wider text-swiss-accent truncate">
+              {q.bindingKey}
             </span>
           )}
-          <div className="h-2 bg-muted rounded-full overflow-hidden border border-ink/20">
+          <div className="h-1.5 bg-swiss-muted border border-black overflow-hidden">
             <div
-              className={`h-full transition-all ${full ? "bg-accent" : "bg-ballpoint"}`}
+              className={`h-full transition-all duration-200 ${full ? "bg-swiss-accent" : "bg-black"}`}
               style={{ width: `${Math.min(pct, 100)}%` }}
             />
           </div>
@@ -227,22 +210,19 @@ export function DLQNode({ q, x, y }: { q: Queue; x: number; y: number }) {
       x={x}
       y={y}
       tooltip={
-        <div className="flex flex-col gap-0.5 font-body text-xs">
-          <span className="font-heading font-bold text-sm">Dead Letter Queue</span>
-          <span>Dead messages: <span className="text-accent">{q.depth.length}</span></span>
-          <span className="text-ink/60">Exceeded max redeliveries</span>
+        <div className="flex flex-col gap-0.5 text-xs uppercase tracking-wider">
+          <span className="font-black text-sm">DEAD LETTER QUEUE</span>
+          <span>DEAD: {q.depth.length}</span>
+          <span className="opacity-60">EXCEEDED MAX REDELIVERIES</span>
         </div>
       }
     >
-      <div
-        className="w-24 md:w-28 px-3 py-2 border-2 border-dashed border-ink bg-muted/50 shadow-[3px_3px_0px_0px_rgba(45,45,45,0.2)]"
-        style={{ borderRadius: WOBBLY_MD }}
-      >
-        <div className="flex items-center gap-1">
-          <div className="w-3 h-3 rounded-full bg-accent border border-ink shadow-[1px_1px_0px_0px_#2d2d2d]" />
-          <span className="font-heading font-bold text-xs md:text-sm">DLQ</span>
+      <div className="w-24 md:w-28 px-3 py-2 border-2 border-black border-dashed bg-swiss-muted rounded-none">
+        <div className="flex items-center gap-1.5">
+          <div className="w-2.5 h-2.5 bg-swiss-accent" />
+          <span className="font-black text-xs md:text-sm uppercase tracking-tighter">DLQ</span>
         </div>
-        <span className="font-body text-xs text-ink/60">{q.depth.length} dead</span>
+        <span className="font-medium text-xs uppercase tracking-wider opacity-70">{q.depth.length} DEAD</span>
         <MessageDots ids={q.depth} max={15} />
       </div>
     </NodeShell>
@@ -263,31 +243,25 @@ export function ExchangeNode({
       x={x}
       y={y}
       tooltip={
-        <div className="flex flex-col gap-0.5 font-body text-xs">
-          <span className="font-heading font-bold text-sm">Exchange</span>
-          <span>Type: <span className="text-ballpoint">{pattern === "pubsub" ? "fanout" : "topic"}</span></span>
-          <span className="text-ink/60">
-            {pattern === "pubsub"
-              ? "Copies every msg to all queues"
-              : "Routes by routing key → binding match"}
+        <div className="flex flex-col gap-0.5 text-xs uppercase tracking-wider">
+          <span className="font-black text-sm">EXCHANGE</span>
+          <span>TYPE: {pattern === "pubsub" ? "FANOUT" : "TOPIC"}</span>
+          <span className="opacity-60">
+            {pattern === "pubsub" ? "COPIES EVERY MSG TO ALL QUEUES" : "ROUTES BY KEY → BINDING MATCH"}
           </span>
         </div>
       }
     >
-      <div
-        className="w-20 h-20 md:w-24 md:h-24 flex flex-col items-center justify-center bg-postit border-[3px] border-ink shadow-[4px_4px_0px_0px_#2d2d2d]"
-        style={{ borderRadius: WOBBLY_MD, transform: "rotate(-1deg)" }}
-      >
-        <span className="font-heading font-bold text-xs md:text-sm">Exchange</span>
-        <span className="font-body text-[10px] md:text-xs text-ink/60">
-          {pattern === "pubsub" ? "fanout" : "topic"}
+      <div className="w-20 h-20 md:w-24 md:h-24 flex flex-col items-center justify-center bg-swiss-muted border-2 border-black rounded-none">
+        <span className="font-black text-xs md:text-sm uppercase tracking-tighter">EXCH</span>
+        <span className="font-medium text-[10px] md:text-xs uppercase tracking-wider opacity-70">
+          {pattern === "pubsub" ? "FANOUT" : "TOPIC"}
         </span>
       </div>
     </NodeShell>
   );
 }
 
-// Small colored dots representing messages stacked in a queue/dlq/consumer.
 export function MessageDots({ ids, max }: { ids: string[]; max: number }) {
   if (ids.length === 0) return <div className="h-3" />;
   const shown = ids.slice(-max);
@@ -296,18 +270,13 @@ export function MessageDots({ ids, max }: { ids: string[]; max: number }) {
       {shown.map((id, i) => (
         <div
           key={id}
-          className="w-2 h-2 border border-ink/40"
-          style={{
-            borderRadius: "60% 40% 50% 50% / 40% 60% 40% 60%",
-            opacity: 0.4 + (i / shown.length) * 0.6,
-          }}
+          className="w-2 h-2 bg-black"
+          style={{ opacity: 0.3 + (i / shown.length) * 0.7 }}
         />
       ))}
       {ids.length > max && (
-        <span className="text-[9px] text-ink/50 font-body">+{ids.length - max}</span>
+        <span className="text-[9px] font-medium uppercase tracking-wider opacity-50">+{ids.length - max}</span>
       )}
     </div>
   );
 }
-
-export { TRAVEL_TIME };

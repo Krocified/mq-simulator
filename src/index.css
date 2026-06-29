@@ -1,23 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  --color-paper: #fdfbf7;
-  --color-ink: #2d2d2d;
-  --color-muted: #e5e0d8;
-  --color-accent: #ff4d4d;
-  --color-ballpoint: #2d5da1;
-  --color-postit: #fff9c4;
+  --color-swiss-bg: #ffffff;
+  --color-swiss-fg: #000000;
+  --color-swiss-muted: #f2f2f2;
+  --color-swiss-accent: #ff3000;
+  --color-swiss-border: #000000;
 
-  --font-heading: "Kalam", system-ui, sans-serif;
-  --font-body: "Patrick Hand", system-ui, sans-serif;
-
-  --radius-wobbly: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  --radius-wobbly-md: 155px 25px 165px 25px / 25px 165px 25px 155px;
-  --radius-wobbly-sm: 65px 8px 70px 8px / 8px 70px 8px 65px;
-
-  --shadow-hard: 4px 4px 0px 0px #2d2d2d;
-  --shadow-hard-lg: 8px 8px 0px 0px #2d2d2d;
-  --shadow-hard-sm: 2px 2px 0px 0px #2d2d2d;
+  --font-sans: "Inter", system-ui, sans-serif;
 }
 
 :root {
@@ -32,32 +22,56 @@ body,
 }
 
 body {
-  font-family: var(--font-body);
-  color: var(--color-ink);
-  background-color: var(--color-paper);
-  background-image: radial-gradient(#e5e0d8 1px, transparent 1px);
-  background-size: 24px 24px;
+  font-family: var(--font-sans);
+  color: var(--color-swiss-fg);
+  background-color: var(--color-swiss-bg);
   -webkit-font-smoothing: antialiased;
+  font-feature-settings: "cv11", "ss01";
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: var(--font-heading);
-  font-weight: 700;
+/* Swiss pattern textures */
+.swiss-grid-pattern {
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
-button {
-  font-family: var(--font-body);
-  cursor: pointer;
+.swiss-dots {
+  background-image: radial-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  background-size: 16px 16px;
 }
 
-input,
-select {
-  font-family: var(--font-body);
+.swiss-diagonal {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.02),
+    rgba(0, 0, 0, 0.02) 1px,
+    transparent 1px,
+    transparent 10px
+  );
+}
+
+.swiss-noise {
+  position: relative;
+}
+.swiss-noise::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.015'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* Swiss focus ring */
+*:focus-visible {
+  outline: 2px solid var(--color-swiss-accent);
+  outline-offset: 2px;
+}
+
+/* Range slider — Swiss */
+input[type="range"] {
+  accent-color: var(--color-swiss-accent);
 }
 
 @media (prefers-reduced-motion: reduce) {

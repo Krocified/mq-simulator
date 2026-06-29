@@ -3,7 +3,6 @@ import { computePositions } from "./positions";
 import { ProducerNode, ConsumerNode, QueueNode, ExchangeNode } from "./Nodes";
 import { MessageLayer } from "./MessageLayer";
 import { Plus } from "lucide-react";
-import { WOBBLY_MD } from "../ui/wobbly";
 
 export function Canvas({
   selected,
@@ -19,8 +18,7 @@ export function Canvas({
 
   return (
     <div
-      className="relative w-full flex-1 min-h-[480px] border-2 border-ink/20 bg-white/40 overflow-hidden"
-      style={{ borderRadius: WOBBLY_MD }}
+      className="relative w-full flex-1 min-h-[480px] border-2 border-black bg-white swiss-grid-pattern overflow-hidden"
       onClick={() => onSelect(null)}
     >
       {/* connection paths */}
@@ -90,7 +88,7 @@ export function Canvas({
           addProducer();
         }}
         disabled={sim.producers.length >= 8}
-        label="producer"
+        label="PRODUCER"
       />
       <AddButton
         x={90}
@@ -104,7 +102,7 @@ export function Canvas({
           sim.consumers.length >= 8 ||
           (sim.pattern === "simple" && sim.consumers.length >= 1)
         }
-        label="consumer"
+        label="CONSUMER"
       />
     </div>
   );
@@ -137,12 +135,11 @@ function AddButton({
         onClick={onClick}
         disabled={disabled}
         title={`Add ${label}`}
-        className={`w-8 h-8 flex items-center justify-center border-2 border-dashed border-ink bg-white/80 hover:bg-muted transition-all ${
-          disabled ? "opacity-30 cursor-not-allowed" : "hover:rotate-3"
+        className={`w-10 h-10 flex items-center justify-center border-2 border-black bg-white transition-all duration-200 ease-out rounded-none ${
+          disabled ? "opacity-20 cursor-not-allowed" : "hover:bg-black hover:text-white hover:rotate-90"
         }`}
-        style={{ borderRadius: "50% 40% 55% 45% / 40% 55% 45% 60%" }}
       >
-        <Plus size={16} strokeWidth={3} />
+        <Plus size={18} strokeWidth={2.5} />
       </button>
     </div>
   );
@@ -155,10 +152,10 @@ function drawDirectPaths(sim: ReturnType<typeof useStore.getState>["sim"], pos: 
   return (
     <>
       {sim.producers.map((p) => (
-        <line key={p.id} x1={pos[p.id].x} y1={pos[p.id].y} x2={pos[q.id].x} y2={pos[q.id].y} stroke="#2d2d2d" strokeWidth={0.15} strokeDasharray="0.8 0.6" opacity={0.4} />
+        <line key={p.id} x1={pos[p.id].x} y1={pos[p.id].y} x2={pos[q.id].x} y2={pos[q.id].y} stroke="#000000" strokeWidth={0.2} opacity={0.3} />
       ))}
       {sim.consumers.map((c) => (
-        <line key={c.id} x1={pos[q.id].x} y1={pos[q.id].y} x2={pos[c.id].x} y2={pos[c.id].y} stroke="#2d2d2d" strokeWidth={0.15} strokeDasharray="0.8 0.6" opacity={0.4} />
+        <line key={c.id} x1={pos[q.id].x} y1={pos[q.id].y} x2={pos[c.id].x} y2={pos[c.id].y} stroke="#000000" strokeWidth={0.2} opacity={0.3} />
       ))}
     </>
   );
@@ -170,16 +167,16 @@ function drawFanoutPaths(sim: ReturnType<typeof useStore.getState>["sim"], pos: 
   return (
     <>
       {sim.producers.map((p) => (
-        <line key={p.id} x1={pos[p.id].x} y1={pos[p.id].y} x2={ex.x} y2={ex.y} stroke="#2d2d2d" strokeWidth={0.15} strokeDasharray="0.8 0.6" opacity={0.4} />
+        <line key={p.id} x1={pos[p.id].x} y1={pos[p.id].y} x2={ex.x} y2={ex.y} stroke="#000000" strokeWidth={0.2} opacity={0.3} />
       ))}
       {realQueues.map((q) => (
-        <line key={q.id} x1={ex.x} y1={ex.y} x2={pos[q.id].x} y2={pos[q.id].y} stroke="#2d2d2d" strokeWidth={0.15} strokeDasharray="0.8 0.6" opacity={0.4} />
+        <line key={q.id} x1={ex.x} y1={ex.y} x2={pos[q.id].x} y2={pos[q.id].y} stroke="#000000" strokeWidth={0.2} opacity={0.3} />
       ))}
       {realQueues.map((q) => {
         const c = sim.consumers.find((c) => c.queueId === q.id);
         if (!c) return null;
         return (
-          <line key={q.id + c.id} x1={pos[q.id].x} y1={pos[q.id].y} x2={pos[c.id].x} y2={pos[c.id].y} stroke="#2d2d2d" strokeWidth={0.15} strokeDasharray="0.8 0.6" opacity={0.4} />
+          <line key={q.id + c.id} x1={pos[q.id].x} y1={pos[q.id].y} x2={pos[c.id].x} y2={pos[c.id].y} stroke="#000000" strokeWidth={0.2} opacity={0.3} />
         );
       })}
     </>

@@ -1,6 +1,6 @@
 export function Sparkline({
   data,
-  color = "#2d5da1",
+  color = "#000000",
   height = 32,
   width = 120,
 }: {
@@ -10,7 +10,7 @@ export function Sparkline({
   width?: number;
 }) {
   if (data.length < 2) {
-    return <div style={{ height, width }} className="text-[10px] text-ink/30 flex items-center justify-center font-body">—</div>;
+    return <div style={{ height, width }} className="text-[10px] uppercase tracking-wider opacity-30 flex items-center justify-center font-medium">—</div>;
   }
   const max = Math.max(...data, 1);
   const min = Math.min(...data, 0);
@@ -29,10 +29,9 @@ export function Sparkline({
         fill="none"
         stroke={color}
         strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeDasharray="0"
-        opacity={0.8}
+        strokeLinecap="square"
+        strokeLinejoin="miter"
+        opacity={0.9}
       />
     </svg>
   );

@@ -1,7 +1,6 @@
 import type { SimState, Message } from "../sim/types";
 import type { Pos } from "./positions";
 import { messagePos } from "./positions";
-import { WOBBLY_SM } from "../ui/wobbly";
 
 const TRAVEL_TIME = 0.25;
 const ACK_FADE = 0.5;
@@ -40,7 +39,6 @@ function messagePixelPos(
   sim: SimState,
   pos: Record<string, Pos>
 ): Pos | null {
-  // traveling: interpolate from → to
   if (TRAVELING.has(m.state)) {
     const from = pos[m.fromNode];
     const to = pos[m.toNode];
@@ -49,7 +47,6 @@ function messagePixelPos(
     return messagePos(from, to, t);
   }
 
-  // queued: stack at queue position
   if (m.state === "queued") {
     const q = sim.queues.find((q) => q.id === m.atNode);
     const base = pos[m.atNode];
@@ -60,7 +57,6 @@ function messagePixelPos(
     return { x: base.x + offsetX - 3, y: base.y + offsetY - 2 };
   }
 
-  // dlq: stack at dlq position
   if (m.state === "dlq") {
     const base = pos["dlq"];
     if (!base) return null;
@@ -69,7 +65,6 @@ function messagePixelPos(
     return { x: base.x, y: base.y + offsetY - 2 };
   }
 
-  // processing / acked: at consumer
   if (m.state === "processing" || m.state === "acked") {
     return pos[m.atNode] ?? null;
   }
@@ -85,28 +80,21 @@ function Token({ m, x, y }: { m: Message; x: number; y: number }) {
       ? 0.8
       : 1;
 
-  const ring =
-    m.state === "nacked"
-      ? "border-accent"
-      : m.state === "to-dlq"
-      ? "border-ink/60 border-dashed"
-      : "border-ink/50";
+  const accent =
+    m.state === "nacked" || m.state === "to-dlq";
 
   return (
     <div
       className="absolute -translate-x-1/2 -translate-y-1/2"
-      style={{ left: `${x}%`, top: `${y}%`, opacity, transition: "opacity 100ms" }}
+      style={{ left: `${x}%`, top: `${y}%`, opacity, transition: "opacity 200ms ease-out" }}
     >
       <div
-        className={`w-3 h-3 md:w-3.5 md:h-3.5 border ${ring}`}
-        style={{
-          borderRadius: WOBBLY_SM,
-          background: m.color,
-        }}
+        className={`w-3 h-3 md:w-3.5 md:h-3.5 border border-black ${accent ? "bg-swiss-accent" : ""}`}
+        style={{ background: accent ? undefined : m.color }}
       />
       {m.state === "acked" && (
         <span
-          className="absolute -top-2 -right-2 text-[10px] text-ballpoint font-heading"
+          className="absolute -top-2 -right-2 text-[10px] font-black text-swiss-accent"
           style={{ opacity }}
         >
           ✓

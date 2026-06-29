@@ -1,6 +1,5 @@
 import { useStore } from "../sim/store";
 import { Sparkline } from "./Sparkline";
-import { TrendingUp, TrendingDown, Inbox, Skull } from "lucide-react";
 
 export function MetricsPanel() {
   const sim = useStore((s) => s.sim);
@@ -20,15 +19,15 @@ export function MetricsPanel() {
   const dlqCount = sim.queues.find((q) => q.isDlq)?.depth.length ?? 0;
 
   return (
-    <div className="flex flex-col gap-3">
-      <MetricCard label="In rate" value={`${rateIn.toFixed(1)}/s`} icon={<TrendingUp size={16} strokeWidth={3} />} series={inSeries} color="#2d5da1" />
-      <MetricCard label="Out rate" value={`${rateOut.toFixed(1)}/s`} icon={<TrendingDown size={16} strokeWidth={3} />} series={outSeries} color="#3a8a3a" />
-      <MetricCard label="Queue depth" value={`${totalDepth}`} icon={<Inbox size={16} strokeWidth={3} />} series={depthSeries} color="#e08e0b" />
-      <div className="grid grid-cols-2 gap-2">
-        <Stat label="Acked" value={sim.ackedTotal} color="text-ballpoint" />
-        <Stat label="Nacked" value={sim.nackedTotal} color="text-accent" />
-        <Stat label="Requeued" value={sim.requeuedTotal} color="text-ink/60" />
-        <Stat label="DLQ" value={dlqCount} color="text-accent" icon={<Skull size={12} strokeWidth={3} />} />
+    <div className="flex flex-col gap-2">
+      <MetricCard label="IN RATE" value={`${rateIn.toFixed(1)}/S`} series={inSeries} color="#ff3000" />
+      <MetricCard label="OUT RATE" value={`${rateOut.toFixed(1)}/S`} series={outSeries} color="#000000" />
+      <MetricCard label="QUEUE DEPTH" value={`${totalDepth}`} series={depthSeries} color="#000000" />
+      <div className="grid grid-cols-2 gap-0 border-2 border-black">
+        <Stat label="ACKED" value={sim.ackedTotal} />
+        <Stat label="NACKED" value={sim.nackedTotal} accent />
+        <Stat label="REQUEUE" value={sim.requeuedTotal} />
+        <Stat label="DLQ" value={dlqCount} accent />
       </div>
     </div>
   );
@@ -37,30 +36,23 @@ export function MetricsPanel() {
 function MetricCard({
   label,
   value,
-  icon,
   series,
   color,
 }: {
   label: string;
   value: string;
-  icon: React.ReactNode;
   series: number[];
   color: string;
 }) {
   return (
-    <div
-      className="bg-white border-2 border-ink p-3 shadow-[3px_3px_0px_0px_rgba(45,45,45,0.15)]"
-      style={{ borderRadius: "155px 25px 165px 25px / 25px 165px 25px 155px" }}
-    >
+    <div className="bg-white border-2 border-black p-3 swiss-dots">
       <div className="flex items-center justify-between mb-1">
-        <span className="flex items-center gap-1.5 font-body text-sm text-ink/70">
-          {icon} {label}
-        </span>
-        <span className="font-heading font-bold text-base" style={{ color }}>
+        <span className="font-medium text-xs uppercase tracking-widest opacity-70">{label}</span>
+        <span className="font-black text-base" style={{ color }}>
           {value}
         </span>
       </div>
-      <Sparkline data={series} color={color} width={180} height={28} />
+      <Sparkline data={series} color={color} width={200} height={28} />
     </div>
   );
 }
@@ -68,23 +60,16 @@ function MetricCard({
 function Stat({
   label,
   value,
-  color,
-  icon,
+  accent,
 }: {
   label: string;
   value: number;
-  color: string;
-  icon?: React.ReactNode;
+  accent?: boolean;
 }) {
   return (
-    <div
-      className="bg-white border-2 border-ink/60 p-2 flex flex-col items-center"
-      style={{ borderRadius: "65px 8px 70px 8px / 8px 70px 8px 65px" }}
-    >
-      <span className="font-body text-xs text-ink/60 flex items-center gap-1">
-        {icon} {label}
-      </span>
-      <span className={`font-heading font-bold text-lg ${color}`}>{value}</span>
+    <div className={`p-2 flex flex-col items-center border-r-2 border-b-2 border-black last:border-r-0 [&:nth-last-child(-n+2)]:border-b-0`}>
+      <span className="font-medium text-[10px] uppercase tracking-widest opacity-60">{label}</span>
+      <span className={`font-black text-lg ${accent ? "text-swiss-accent" : ""}`}>{value}</span>
     </div>
   );
 }

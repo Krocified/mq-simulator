@@ -24,80 +24,57 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col px-4 md:px-6 py-4 gap-4 max-w-7xl mx-auto">
-      {/* header */}
-      <header className="flex flex-wrap items-center justify-between gap-3">
+    <div className="min-h-screen flex flex-col bg-white">
+      {/* header — asymmetric, thick border */}
+      <header className="border-b-4 border-black px-6 md:px-12 py-6 md:py-8 flex flex-wrap items-end justify-between gap-4 swiss-grid-pattern">
         <div>
-          <h1 className="text-3xl md:text-4xl font-heading font-bold leading-none">
+          <span className="font-black text-xs uppercase tracking-widest text-swiss-accent block mb-1">01. SYSTEM</span>
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-black uppercase tracking-tighter leading-[0.9]">
             MQ Simulator
           </h1>
-          <p className="font-body text-sm md:text-base text-ink/60">
-            See the queue breathe.
+          <p className="font-medium text-sm md:text-base uppercase tracking-wider opacity-60 mt-2">
+            See the queue breathe
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <PresetBar />
           <button
             onClick={handleShare}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-body border-2 border-ink bg-white hover:bg-muted shadow-[3px_3px_0px_0px_#2d2d2d] hover:shadow-[1px_1px_0px_0px_#2d2d2d] hover:translate-x-[1px] hover:translate-y-[1px] transition-all"
-            style={{ borderRadius: "65px 8px 70px 8px / 8px 70px 8px 65px" }}
+            className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold uppercase tracking-widest border-2 border-black bg-white hover:bg-black hover:text-white transition-colors duration-200 ease-out"
             title="Copy shareable URL"
           >
-            {copied ? <Copy size={14} strokeWidth={3} /> : <Link2 size={14} strokeWidth={3} />}
-            {copied ? "Copied!" : "Share"}
+            {copied ? <Copy size={14} strokeWidth={2.5} /> : <Link2 size={14} strokeWidth={2.5} />}
+            {copied ? "COPIED" : "SHARE"}
           </button>
         </div>
       </header>
 
-      {/* main */}
-      <div className="flex flex-col lg:flex-row gap-4 flex-1">
-        <div className="flex-1 flex flex-col gap-3">
+      {/* main — asymmetric 8:4 grid */}
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 border-b-4 border-black">
+        <main className="lg:col-span-8 flex flex-col gap-3 p-4 md:p-6 border-r-0 lg:border-r-4 border-black">
           <Canvas selected={selected} onSelect={setSelected} />
-        </div>
+        </main>
 
         {/* sidebar */}
-        <aside className="lg:w-72 flex flex-col gap-3 shrink-0">
-          <Section title="Metrics" decoration="tape">
+        <aside className="lg:col-span-4 flex flex-col border-t-4 lg:border-t-0 border-black">
+          <div className="border-b-2 border-black p-4 bg-swiss-muted swiss-dots">
+            <span className="font-black text-xs uppercase tracking-widest text-swiss-accent block mb-3">02. METRICS</span>
             <MetricsPanel />
-          </Section>
-          <Section title="Configure">
+          </div>
+          <div className="p-4 flex-1">
             <NodeConfig selected={selected} />
-          </Section>
+          </div>
         </aside>
       </div>
 
-      {/* controls */}
-      <Controls />
+      {/* controls — full width, bottom */}
+      <div className="p-4 md:p-6 border-t-2 border-black bg-white">
+        <Controls />
+      </div>
 
-      <footer className="font-body text-xs text-ink/40 text-center py-2">
+      <footer className="px-6 md:px-12 py-4 border-t-2 border-black font-medium text-xs uppercase tracking-widest opacity-50">
         Educational simulator · semantics modeled, not wire-accurate
       </footer>
-    </div>
-  );
-}
-
-function Section({
-  title,
-  children,
-  decoration,
-}: {
-  title: string;
-  children: React.ReactNode;
-  decoration?: "tape" | "tack";
-}) {
-  return (
-    <div
-      className="relative bg-white border-2 border-ink shadow-[4px_4px_0px_0px_#2d2d2d]"
-      style={{ borderRadius: "155px 25px 165px 25px / 25px 165px 25px 155px" }}
-    >
-      {decoration === "tape" && (
-        <div
-          className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-14 h-5 bg-ink/15 border border-ink/20"
-          style={{ borderRadius: "3px 6px 4px 5px", transform: "rotate(-2deg)" }}
-        />
-      )}
-      <h2 className="font-heading font-bold text-lg px-4 pt-3 pb-1">{title}</h2>
-      <div className="px-4 pb-4">{children}</div>
     </div>
   );
 }
