@@ -4,10 +4,10 @@ import { Controls } from "./components/Controls";
 import { PresetBar } from "./components/PresetBar";
 import { NodeConfig } from "./components/NodeConfig";
 import { MetricsPanel } from "./components/MetricsPanel";
-import { LearnPanel } from "./components/LearnPanel";
+import { LearnPanel, FaqSection } from "./components/LearnPanel";
 import { DemoActions } from "./components/DemoActions";
 import { useStore } from "./sim/store";
-import { Link2, Copy } from "lucide-react";
+import { Link2, Copy, Github, Linkedin, AlertCircle } from "lucide-react";
 
 export default function App() {
   const [selected, setSelected] = useState<string | null>(null);
@@ -29,11 +29,14 @@ export default function App() {
     <div className="min-h-screen flex flex-col bg-white">
       {/* header — compact single row */}
       <header className="border-b-2 border-black px-4 md:px-6 py-3 flex items-center justify-between gap-4 bg-swiss-muted swiss-dots">
-        <div className="flex items-baseline gap-3">
+        <div className="flex items-baseline gap-2">
           <h1 className="text-xl md:text-2xl font-black uppercase tracking-tighter leading-none">
             MQ Simulator
           </h1>
-          <span className="font-medium text-xs uppercase tracking-widest opacity-50 hidden sm:inline">
+          <span className="text-xs font-bold uppercase tracking-widest text-swiss-accent">
+            by Kro
+          </span>
+          <span className="font-medium text-xs uppercase tracking-widest opacity-50 hidden sm:inline ml-2">
             See the queue breathe
           </span>
         </div>
@@ -90,8 +93,54 @@ export default function App() {
         <LearnPanel />
       </div>
 
-      <footer className="px-6 md:px-12 py-4 border-t-2 border-black font-medium text-xs uppercase tracking-widest opacity-50">
-        Educational simulator, semantics modeled, not wire-accurate
+      {/* FAQ */}
+      <div className="px-4 md:px-6 py-4 border-t-2 border-black bg-white">
+        <span className="font-black text-xs uppercase tracking-widest text-swiss-accent block mb-3">
+          04. MESSAGE QUEUING FAQ
+        </span>
+        <FaqSection />
+      </div>
+
+      <footer className="px-6 md:px-12 py-4 border-t-2 border-black bg-swiss-muted swiss-dots">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-4">
+            <span className="font-medium text-xs uppercase tracking-widest opacity-50">
+              Educational simulator, semantics modeled, not wire-accurate
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="font-bold text-xs uppercase tracking-widest text-swiss-accent">
+              by Kro
+            </span>
+            <a
+              href="https://github.com/Krocified"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold uppercase tracking-widest border-2 border-black bg-white hover:bg-black hover:text-white transition-colors duration-200 ease-out"
+            >
+              <Github size={12} strokeWidth={2.5} />
+              GitHub
+            </a>
+            <a
+              href="https://www.linkedin.com/in/maxjoong/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold uppercase tracking-widest border-2 border-black bg-white hover:bg-black hover:text-white transition-colors duration-200 ease-out"
+            >
+              <Linkedin size={12} strokeWidth={2.5} />
+              LinkedIn
+            </a>
+            <a
+              href="https://github.com/Krocified/mq-simulator/issues"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold uppercase tracking-widest border-2 border-black bg-swiss-accent text-white hover:bg-black hover:text-white transition-colors duration-200 ease-out"
+            >
+              <AlertCircle size={12} strokeWidth={2.5} />
+              REPORT ISSUES
+            </a>
+          </div>
+        </div>
       </footer>
     </div>
   );
