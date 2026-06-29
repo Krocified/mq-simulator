@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #fdfbf7;
+  --color-ink: #2d2d2d;
+  --color-muted: #e5e0d8;
+  --color-accent: #ff4d4d;
+  --color-ballpoint: #2d5da1;
+  --color-postit: #fff9c4;
+
+  --font-heading: "Kalam", system-ui, sans-serif;
+  --font-body: "Patrick Hand", system-ui, sans-serif;
+
+  --radius-wobbly: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  --radius-wobbly-md: 155px 25px 165px 25px / 25px 165px 25px 155px;
+  --radius-wobbly-sm: 65px 8px 70px 8px / 8px 70px 8px 65px;
+
+  --shadow-hard: 4px 4px 0px 0px #2d2d2d;
+  --shadow-hard-lg: 8px 8px 0px 0px #2d2d2d;
+  --shadow-hard-sm: 2px 2px 0px 0px #2d2d2d;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  background-color: var(--color-paper);
+  background-image: radial-gradient(#e5e0d8 1px, transparent 1px);
+  background-size: 24px 24px;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+input,
+select {
+  font-family: var(--font-body);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
