@@ -26,7 +26,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col bg-white overflow-x-hidden">
       {/* header — compact single row */}
       <header className="border-b-2 border-black px-4 md:px-6 py-3 flex items-center justify-between gap-4 bg-swiss-muted swiss-dots">
         <div className="flex items-baseline gap-2">
@@ -41,7 +41,9 @@ export default function App() {
           </span>
         </div>
         <div className="flex items-center gap-3">
-          <PresetBar />
+          <div className="hidden lg:block">
+            <PresetBar />
+          </div>
           <button
             onClick={handleShare}
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-widest border-2 border-black bg-white hover:bg-black hover:text-white transition-colors duration-200 ease-out"
@@ -57,14 +59,20 @@ export default function App() {
         </div>
       </header>
 
+      {/* mobile preset row */}
+      <div className="lg:hidden border-b-2 border-black px-4 py-2 bg-swiss-muted swiss-dots">
+        <PresetBar />
+      </div>
+
       {/* main — asymmetric 8:4 grid */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 border-b-4 border-black">
         <main className="lg:col-span-8 flex flex-col gap-3 p-4 md:p-6 border-r-0 lg:border-r-4 border-black">
           <Canvas selected={selected} onSelect={setSelected} />
+          <Controls />
         </main>
 
         {/* sidebar */}
-        <aside className="lg:col-span-4 flex flex-col border-t-4 lg:border-t-0 border-black">
+<aside className="lg:col-span-4 flex flex-col border-t-4 lg:border-t-0 border-black">
           <div className="border-b-2 border-black p-4 bg-swiss-muted swiss-dots">
             <span className="font-black text-xs uppercase tracking-widest text-swiss-accent block mb-3">
               02. METRICS
@@ -78,11 +86,6 @@ export default function App() {
             <NodeConfig selected={selected} />
           </div>
         </aside>
-      </div>
-
-      {/* controls — full width, bottom */}
-      <div className="p-4 md:p-6 border-t-2 border-black bg-white">
-        <Controls />
       </div>
 
       {/* learn panel */}

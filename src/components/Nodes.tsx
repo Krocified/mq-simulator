@@ -79,13 +79,13 @@ export function ProducerNode({
       }
     >
       <div
-        className={`w-20 h-20 md:w-24 md:h-24 flex flex-col items-center justify-center border-2 border-black rounded-none transition-colors duration-200 ease-out ${
+        className={`w-12 h-12 md:w-24 md:h-24 flex flex-col items-center justify-center border-2 border-black rounded-none transition-colors duration-200 ease-out ${
           selected ? "bg-swiss-accent text-white" : "bg-white text-black hover:-translate-y-0.5"
         } ${p.blocked ? "border-swiss-accent" : ""}`}
       >
-        <span className="font-black text-sm md:text-base uppercase tracking-tighter">P{p.id.slice(1)}</span>
-        <span className="font-medium text-xs md:text-sm uppercase tracking-wider opacity-70">{p.rate.toFixed(1)}/S</span>
-        {p.blocked && <span className="text-[10px] text-swiss-accent font-bold uppercase">BLK</span>}
+        <span className="font-black text-[10px] md:text-base uppercase tracking-tighter">P{p.id.slice(1)}</span>
+        <span className="font-medium text-[8px] md:text-sm uppercase tracking-wider opacity-70">{p.rate.toFixed(1)}/S</span>
+        {p.blocked && <span className="text-[7px] md:text-[10px] text-swiss-accent font-bold uppercase">BLK</span>}
       </div>
     </NodeShell>
   );
@@ -124,16 +124,16 @@ export function ConsumerNode({
       }
     >
       <div
-        className={`w-20 h-20 md:w-24 md:h-24 flex flex-col items-center justify-center border-2 border-black rounded-none transition-all duration-200 ease-out ${
+        className={`w-12 h-12 md:w-24 md:h-24 flex flex-col items-center justify-center border-2 border-black rounded-none transition-all duration-200 ease-out ${
           selected ? "bg-swiss-accent text-white" : "bg-white text-black hover:-translate-y-0.5"
         } ${dim}`}
       >
-        <span className="font-black text-sm md:text-base uppercase tracking-tighter">C{c.id.slice(1)}</span>
-        <span className="font-medium text-xs md:text-sm uppercase tracking-wider opacity-70">{c.throughput.toFixed(1)}/S</span>
-        {c.paused && <span className="text-[10px] font-bold uppercase">PAUSE</span>}
-        {c.killed && <span className="text-[10px] text-swiss-accent font-bold uppercase">DEAD</span>}
+        <span className="font-black text-[10px] md:text-base uppercase tracking-tighter">C{c.id.slice(1)}</span>
+        <span className="font-medium text-[8px] md:text-sm uppercase tracking-wider opacity-70">{c.throughput.toFixed(1)}/S</span>
+        {c.paused && <span className="text-[7px] md:text-[10px] font-bold uppercase">PAUSE</span>}
+        {c.killed && <span className="text-[7px] md:text-[10px] text-swiss-accent font-bold uppercase">DEAD</span>}
         {!c.paused && !c.killed && c.inFlight.length > 0 && (
-          <span className="text-[10px] font-bold uppercase opacity-50">BUSY</span>
+          <span className="text-[7px] md:text-[10px] font-bold uppercase opacity-50">BUSY</span>
         )}
       </div>
     </NodeShell>
@@ -175,19 +175,19 @@ export function QueueNode({
       }
     >
       <div
-        className={`w-28 md:w-32 border-2 border-black rounded-none transition-colors duration-200 ${
+        className={`w-20 md:w-32 border-2 border-black rounded-none transition-colors duration-200 ${
           full ? "border-swiss-accent" : ""
         } ${selected ? "bg-swiss-accent text-white" : "bg-white"}`}
       >
-        <div className="px-3 py-2 flex flex-col gap-1">
+        <div className="w-16 md:w-32 px-1.5 py-1 md:px-3 md:py-2 flex flex-col gap-1">
           <div className="flex justify-between items-center">
-            <span className="font-black text-xs md:text-sm uppercase tracking-tighter">QUEUE</span>
-            <span className="font-medium text-xs uppercase tracking-wider opacity-70">
+            <span className="font-black text-[9px] md:text-sm uppercase tracking-tighter">QUEUE</span>
+            <span className="font-medium text-[8px] md:text-xs uppercase tracking-wider opacity-70">
               {q.depth.length}/{q.capacity}
             </span>
           </div>
           {pattern === "routing" && q.bindingKey && (
-            <span className="font-medium text-[10px] uppercase tracking-wider text-swiss-accent truncate">
+            <span className="font-medium text-[7px] md:text-[10px] uppercase tracking-wider text-swiss-accent truncate">
               {q.bindingKey}
             </span>
           )}
@@ -217,12 +217,12 @@ export function DLQNode({ q, x, y }: { q: Queue; x: number; y: number }) {
         </div>
       }
     >
-      <div className="w-24 md:w-28 px-3 py-2 border-2 border-black border-dashed bg-swiss-muted rounded-none">
-        <div className="flex items-center gap-1.5">
-          <div className="w-2.5 h-2.5 bg-swiss-accent" />
-          <span className="font-black text-xs md:text-sm uppercase tracking-tighter">DLQ</span>
+      <div className="w-14 md:w-28 px-1.5 py-1 md:px-3 md:py-2 border-2 border-black border-dashed bg-swiss-muted rounded-none">
+        <div className="flex items-center gap-1 md:gap-1.5">
+          <div className="w-2 md:w-2.5 h-2 md:h-2.5 bg-swiss-accent" />
+          <span className="font-black text-[9px] md:text-sm uppercase tracking-tighter">DLQ</span>
         </div>
-        <span className="font-medium text-xs uppercase tracking-wider opacity-70">{q.depth.length} DEAD</span>
+        <span className="font-medium text-[8px] md:text-xs uppercase tracking-wider opacity-70">{q.depth.length} DEAD</span>
         <MessageDots ids={q.depth} max={15} />
       </div>
     </NodeShell>
@@ -252,9 +252,9 @@ export function ExchangeNode({
         </div>
       }
     >
-      <div className="w-20 h-20 md:w-24 md:h-24 flex flex-col items-center justify-center bg-swiss-muted border-2 border-black rounded-none">
-        <span className="font-black text-xs md:text-sm uppercase tracking-tighter">EXCH</span>
-        <span className="font-medium text-[10px] md:text-xs uppercase tracking-wider opacity-70">
+      <div className="w-12 h-12 md:w-24 md:h-24 flex flex-col items-center justify-center bg-swiss-muted border-2 border-black rounded-none">
+        <span className="font-black text-[9px] md:text-sm uppercase tracking-tighter">EXCH</span>
+        <span className="font-medium text-[7px] md:text-xs uppercase tracking-wider opacity-70">
           {pattern === "pubsub" ? "FANOUT" : "TOPIC"}
         </span>
       </div>

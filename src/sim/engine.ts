@@ -202,13 +202,15 @@ function processConsumers(s: SimState, dt: number) {
       }
     }
 
-    // process in-flight
+    // process in-flight (only after message has arrived)
     if (c.inFlight.length > 0) {
+      const mid = c.inFlight[0];
+      const m = s.messages[mid];
+      if (m && m.state !== "processing") continue;
       c.procAccum += c.throughput * dt;
       if (c.procAccum >= 1) {
         c.procAccum -= 1;
-        const mid = c.inFlight.shift()!;
-        const m = s.messages[mid];
+        c.inFlight.shift()!;
         if (!m) continue;
         m.deliveries++;
         if (Math.random() * 100 < c.ackPct) {

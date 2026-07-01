@@ -1,13 +1,11 @@
 import { useStore } from "../sim/store";
 import { Button } from "../ui/components";
-import { Trash2, Pause, Play, Skull, RotateCcw } from "lucide-react";
+import { Pause, Play, Skull, RotateCcw } from "lucide-react";
 
 export function NodeConfig({ selected }: { selected: string | null }) {
   const sim = useStore((s) => s.sim);
   const updateProducer = useStore((s) => s.updateProducer);
-  const removeProducer = useStore((s) => s.removeProducer);
   const updateConsumer = useStore((s) => s.updateConsumer);
-  const removeConsumer = useStore((s) => s.removeConsumer);
   const updateQueueCapacity = useStore((s) => s.updateQueueCapacity);
   const setMaxRedeliveries = useStore((s) => s.setMaxRedeliveries);
 
@@ -43,7 +41,6 @@ export function NodeConfig({ selected }: { selected: string | null }) {
           />
         )}
         <div className="text-xs uppercase tracking-wider opacity-60">EMITTED: {producer.totalEmitted}</div>
-        <RemoveButton onClick={() => removeProducer(producer.id)} />
       </Panel>
     );
   }
@@ -106,7 +103,6 @@ export function NodeConfig({ selected }: { selected: string | null }) {
               </span>
             </Button>
           )}
-          <RemoveButton onClick={() => removeConsumer(consumer.id)} />
         </div>
         <div className="flex gap-4 text-xs uppercase tracking-wider opacity-60">
           <span>ACKED: {consumer.totalAcked}</span>
@@ -209,15 +205,5 @@ function TextInput({
         className="px-2 py-1.5 border-2 border-black bg-white text-sm font-medium rounded-none focus:border-swiss-accent focus:outline-none"
       />
     </label>
-  );
-}
-
-function RemoveButton({ onClick }: { onClick: () => void }) {
-  return (
-    <Button variant="ghost" onClick={onClick}>
-      <span className="flex items-center gap-1">
-        <Trash2 size={12} strokeWidth={2.5} /> REMOVE
-      </span>
-    </Button>
   );
 }

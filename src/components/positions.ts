@@ -50,15 +50,10 @@ export function computePositions(s: SimState): Record<string, Pos> {
   return pos;
 }
 
-// Interpolate position for a traveling message, with a slight arc.
-export function messagePos(
-  from: Pos,
-  to: Pos,
-  t: number,
-  arc = 12
-): Pos {
-  const x = from.x + (to.x - from.x) * t;
-  const baseY = from.y + (to.y - from.y) * t;
-  const y = baseY - Math.sin(t * Math.PI) * arc;
-  return { x, y };
+// Interpolate position for a traveling message, straight line.
+export function messagePos(from: Pos, to: Pos, t: number): Pos {
+  return {
+    x: from.x + (to.x - from.x) * t,
+    y: from.y + (to.y - from.y) * t,
+  };
 }

@@ -39,13 +39,13 @@ function MetricCard({
 }) {
   return (
     <div className="bg-white border-2 border-black p-3 swiss-dots">
-      <div className="flex items-center justify-between mb-1">
-        <span className="font-medium text-xs uppercase tracking-widest opacity-70">{label}</span>
-        <span className="font-black text-base" style={{ color }}>
+      <div className="flex items-center gap-2">
+        <span className="font-medium text-xs uppercase tracking-widest opacity-70 shrink-0">{label}</span>
+        <Sparkline data={series} color={color} height={24} className="flex-1 min-w-0" />
+        <span className="font-black text-base shrink-0" style={{ color }}>
           {value}
         </span>
       </div>
-      <Sparkline data={series} color={color} width={200} height={28} />
     </div>
   );
 }

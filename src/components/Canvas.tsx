@@ -33,35 +33,52 @@ export function Canvas({
   return (
     <div className="flex flex-col gap-3 flex-1">
       {/* toolbar */}
-      <div className="flex items-center gap-0 border-2 border-black">
-        <AddToolbarButton
-          label="ADD PRODUCER"
-          count={sim.producers.length}
-          max={8}
-          onClick={() => addProducer()}
-        />
-        <RemoveToolbarButton
-          label="REMOVE PRODUCER"
-          count={sim.producers.length}
-          onClick={() => {
-            const last = sim.producers[sim.producers.length - 1];
-            if (last) removeProducer(last.id);
-          }}
-        />
-        <AddToolbarButton
-          label="ADD CONSUMER"
-          count={sim.consumers.length}
-          max={sim.pattern === "simple" ? 1 : 8}
-          onClick={() => addConsumer()}
-        />
-        <RemoveToolbarButton
-          label="REMOVE CONSUMER"
-          count={sim.consumers.length}
-          onClick={() => {
-            const last = sim.consumers[sim.consumers.length - 1];
-            if (last) removeConsumer(last.id);
-          }}
-        />
+      <div className="flex items-stretch gap-2 lg:gap-0 w-full">
+        {/* mobile: compact +/- grouped, full width */}
+        <div className="lg:hidden flex items-stretch w-full gap-2">
+          <div className="flex items-stretch flex-1 border-2 border-black divide-x-2 divide-black">
+            <CompactIconBtn onClick={() => addProducer()} disabled={sim.producers.length >= 8} icon="plus" />
+            <CompactLabel label="P" count={sim.producers.length} max={8} />
+            <CompactIconBtn onClick={() => { const last = sim.producers[sim.producers.length - 1]; if (last) removeProducer(last.id); }} disabled={sim.producers.length === 0} icon="minus" accent />
+          </div>
+          <div className="flex items-stretch flex-1 border-2 border-black divide-x-2 divide-black">
+            <CompactIconBtn onClick={() => addConsumer()} disabled={sim.consumers.length >= (sim.pattern === "simple" ? 1 : 8)} icon="plus" />
+            <CompactLabel label="C" count={sim.consumers.length} max={sim.pattern === "simple" ? 1 : 8} />
+            <CompactIconBtn onClick={() => { const last = sim.consumers[sim.consumers.length - 1]; if (last) removeConsumer(last.id); }} disabled={sim.consumers.length === 0} icon="minus" accent />
+          </div>
+        </div>
+
+        {/* desktop: full labels */}
+        <div className="hidden lg:flex items-stretch border-2 border-black divide-x-2 divide-black">
+          <AddToolbarButton
+            label="ADD PRODUCER"
+            count={sim.producers.length}
+            max={8}
+            onClick={() => addProducer()}
+          />
+          <RemoveToolbarButton
+            label="REMOVE PRODUCER"
+            count={sim.producers.length}
+            onClick={() => {
+              const last = sim.producers[sim.producers.length - 1];
+              if (last) removeProducer(last.id);
+            }}
+          />
+          <AddToolbarButton
+            label="ADD CONSUMER"
+            count={sim.consumers.length}
+            max={sim.pattern === "simple" ? 1 : 8}
+            onClick={() => addConsumer()}
+          />
+          <RemoveToolbarButton
+            label="REMOVE CONSUMER"
+            count={sim.consumers.length}
+            onClick={() => {
+              const last = sim.consumers[sim.consumers.length - 1];
+              if (last) removeConsumer(last.id);
+            }}
+          />
+        </div>
       </div>
 
       {/* flood warning bar — latched, stays once shown */}
@@ -83,7 +100,7 @@ export function Canvas({
 
       {/* canvas */}
       <div
-        className={`relative w-full flex-1 min-h-[480px] border-2 bg-white swiss-grid-pattern overflow-visible transition-colors duration-200 ${
+        className={`relative w-full flex-1 min-h-[500px] lg:min-h-[600px] border-2 bg-white swiss-grid-pattern overflow-hidden lg:overflow-visible transition-colors duration-200 ${
           isFlooding ? "border-swiss-accent" : "border-black"
         }`}
         onClick={() => onSelect(null)}
@@ -95,11 +112,11 @@ export function Canvas({
           : drawDirectPaths(sim, pos)}
       </svg>
 
-      {/* path labels — HTML, not SVG, to avoid stretch */}
+      {/* path labels — HTML, not SVG, to avoid stretch. Hidden on mobile. */}
       {labels.map((l, i) => (
         <div
           key={i}
-          className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-none z-5"
+          className="hidden lg:block absolute -translate-x-1/2 -translate-y-1/2 pointer-events-none z-5"
           style={{
             left: `${(l.from.x + l.to.x) / 2}%`,
             top: `${(l.from.y + l.to.y) / 2}%`,
@@ -166,6 +183,51 @@ export function Canvas({
   );
 }
 
+function CompactIconBtn({
+  onClick,
+  disabled,
+  icon,
+  accent,
+}: {
+  onClick: () => void;
+  disabled: boolean;
+  icon: "plus" | "minus";
+  accent?: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`flex items-center justify-center px-3 py-2 transition-colors duration-200 ease-out ${
+        disabled
+          ? "bg-swiss-muted opacity-40 cursor-not-allowed"
+          : accent
+          ? "bg-white hover:bg-swiss-accent hover:text-white"
+          : "bg-white hover:bg-black hover:text-white"
+      }`}
+    >
+      {icon === "plus" ? <Plus size={14} strokeWidth={2.5} /> : <Minus size={14} strokeWidth={2.5} />}
+    </button>
+  );
+}
+
+function CompactLabel({
+  label,
+  count,
+  max,
+}: {
+  label: string;
+  count: number;
+  max: number;
+}) {
+  return (
+    <div className="flex-1 flex items-center justify-center gap-1 py-2 text-xs font-black bg-swiss-muted">
+      {label}
+      <span className="opacity-50 text-[10px]">{count}/{max}</span>
+    </div>
+  );
+}
+
 function AddToolbarButton({
   label,
   count,
@@ -182,7 +244,7 @@ function AddToolbarButton({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold uppercase tracking-widest border-r-2 border-black last:border-r-0 transition-colors duration-200 ease-out ${
+      className={`hidden lg:flex items-center gap-2 px-4 py-2.5 text-xs font-bold uppercase tracking-widest transition-colors duration-200 ease-out ${
         disabled
           ? "bg-swiss-muted opacity-40 cursor-not-allowed"
           : "bg-white hover:bg-black hover:text-white"
@@ -209,7 +271,7 @@ function RemoveToolbarButton({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold uppercase tracking-widest border-r-2 border-black last:border-r-0 transition-colors duration-200 ease-out ${
+      className={`hidden lg:flex items-center gap-2 px-4 py-2.5 text-xs font-bold uppercase tracking-widest transition-colors duration-200 ease-out ${
         disabled
           ? "bg-swiss-muted opacity-40 cursor-not-allowed"
           : "bg-white hover:bg-swiss-accent hover:text-white"

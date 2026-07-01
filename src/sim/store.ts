@@ -165,9 +165,15 @@ export const useStore = create<Store>((set, get) => ({
       return { sim: { ...sim, producers: [...sim.producers, p] } };
     }),
   removeProducer: (id) =>
-    set((prev) => ({
-      sim: { ...prev.sim, producers: prev.sim.producers.filter((p) => p.id !== id) },
-    })),
+    set((prev) => {
+      const next = { ...prev.sim, producers: prev.sim.producers.filter((p) => p.id !== id) };
+      const bindingKeys = next.consumers.map((_, i) => {
+        const oldQ = prev.sim.queues.find((q) => q.id === `q-c${i}`);
+        return oldQ?.bindingKey ?? (next.pattern === "routing" ? "logs.#" : "");
+      });
+      buildTopology(next, queueCapacityOf(prev.sim), bindingKeys);
+      return { sim: next };
+    }),
   updateProducer: (id, patch) =>
     set((prev) => ({
       sim: {
